@@ -68,10 +68,12 @@ public class PatientControllerImpl implements PatientController {
   public Patient updatePatient(
       @Valid @RequestBody UpdatePatientDto patient, BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
+      System.out.println(patient);
       List<String> array = bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
         logger.warn("Error, invalid argument:" + array);
       throw new BadArgumentException("KO, invalid argument.");
     }
+    System.out.println(patient);
     logger.trace(
         "Updating patient: " + patient.getFamilyName() + " - " + patient.getGivenName() + ".");
     return patientService.updatePatient(patient);

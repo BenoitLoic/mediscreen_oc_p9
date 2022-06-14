@@ -1,43 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="ie=edge" http-equiv="X-UA-Compatible">
-    <title>Mediscreen</title>
-    <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="ie=edge" http-equiv="X-UA-Compatible">
+  <title>Mediscreen</title>
+  <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-    <h1 class="display-4 mb-4">Bienvenue sur Mediscreen</h1>
-
-    <form id="getPatient">
-        <div class="form-group">
-            <input class="form-control" id="family" placeholder="Family Name" type="text">
-        </div>
-        <div class="form-group">
-            <input class="form-control" id="given" placeholder="Given Name" type="text">
-        </div>
-        <input class="btn btn-secondary mb-4" type="submit" value="Get patient info">
-    </form>
-    <div id="output"></div>
+  <h1 class="display-4 mb-4">Bienvenue sur Mediscreen</h1>
+  
+  <form id="getPatient">
+    <div class="form-group">
+      <input class="form-control" id="family" placeholder="Family Name" type="text">
+    </div>
+    <div class="form-group">
+      <input class="form-control" id="given" placeholder="Given Name" type="text">
+    </div>
+    <input class="btn btn-secondary mb-4" type="submit" value="Get patient info">
+    <button class="btn btn-success mb-4" id="updatePatientForm">Update</button>
+  </form>
+  <div id="output"></div>
 </div>
+<div class="container">
+  <h2 class="mb-4">Update Patient</h2>
+  <form id="updatePatient">
+    <div class="list-group-item">Id
+      <input type="text" id="id" class="form-control" placeholder="${patient.id}">
+    </div>
+    <div class="list-group-item">Family Name
+      <input type="text" id="familyName" class="form-control" placeholder="${patient.familyName}">
+    </div>
+    <div class="list-group-item">Given Name
+      <input type="text" id="givenName" class="form-control" placeholder="${patient.givenName}">
+    </div>
+    <div class="list-group-item">Birthdate
+      <input type="text" id="birthDate" class="form-control" placeholder="${patient.birthDate}">
+    </div>
+    <div class="list-group-item">Sex
+      <input type="text" id="sex" class="form-control" placeholder="${patient.sex}">
+    </div>
+    <div class="list-group-item">Address
+      <input type="text" id="address" class="form-control" placeholder="${patient.address}">
+    </div>
+    <div class="list-group-item">Phone
+      <input type="text" id="phone" class="form-control" placeholder="${patient.phone}">
+    </div>
+    <input type="submit" class="btn btn-secondary" value="Submit Change">
+  </form>
+</div>
+
 <script>
-    document.getElementById('getPatient').addEventListener('submit', getPatient);
-
-    function getPatient(e) {
-        e.preventDefault();
-        let family = document.getElementById('family').value;
-        let given = document.getElementById('given').value;
-
-        fetch(`http://localhost:8081/patient/get?family=${family}&given=${given}`)
-            .then((response) => response.json())
-            .then((patient) => {
-                let output = '<h2 class="mb-4">Patient information</h2>';
-
-                    output += `
-                    <ul class="list-group mb-3">
+  document.getElementById('getPatient').addEventListener('submit', getPatient);
+  // document.getElementById('updatePatientForm').addEventListener('click', updatePatientForm);
+  document.getElementById('updatePatient').addEventListener('submit', updatePatient);
+  
+  function getPatient(e) {
+    e.preventDefault();
+    let family = document.getElementById('family').value;
+    let given = document.getElementById('given').value;
+    
+    fetch(`http://localhost:8081/patient/get?family=${family}&given=${given}`)
+      .then((response) => response.json())
+      .then((patient) => {
+        let output = '<h2 class="mb-4">Patient information</h2>';
+        
+        output += `
+                    <ul class="list-group mb-3" >
+                        <li class="list-group-item">Id: ${patient.id}</li>
                         <li class="list-group-item">Family Name: ${patient.familyName}</li>
                         <li class="list-group-item">Given Name: ${patient.givenName}</li>
                         <li class="list-group-item">Birth date: ${patient.birthDate}</li>
@@ -46,10 +78,103 @@
                         <li class="list-group-item">Phone: ${patient.phone}</li>
                     </ul>
                     `;
+        
+        document.getElementById('output').innerHTML = output;
+      })
+  }
+  
+  // function updatePatientForm(e) {
+  //   e.preventDefault();
+  //
+  //   let family = document.getElementById('family').value;
+  //   let given = document.getElementById('given').value;
+  //
+  //   fetch(`http://localhost:8081/patient/get?family=${family}&given=${given}`)
+  //     .then((response) => response.json())
+  //     .then((patient) => {
+  //       let outputForm = document.createElement('updatePatient');
+  //
+  //       outputForm += '<h2 class="mb-4">Update Patient</h2>';
+  //
+  //       outputForm += `
+  //                   <form id="updatePatient">
+  //                       <div class="list-group-item" hidden>Id
+  //                         <input type="hidden" id="id" class="form-control" placeholder="${patient.id}" value="${patient.id}">
+  //                       </div>
+  //                       <div class="list-group-item">Family Name
+  //                         <input type="text" id="familyName" class="form-control" placeholder="${patient.familyName}" value="${patient.familyName}">
+  //                       </div>
+  //                       <div class="list-group-item">Given Name
+  //                         <input type="text" id="givenName" class="form-control" placeholder="${patient.givenName}" value="${patient.givenName}">
+  //                       </div>
+  //                       <div class="list-group-item">Birthdate
+  //                         <input type="text" id="birthDate" class="form-control" placeholder="${patient.birthDate}">
+  //                       </div>
+  //                       <div class="list-group-item">Sex
+  //                         <input type="text" id="sex" class="form-control" placeholder="${patient.sex}">
+  //                       </div>
+  //                       <div class="list-group-item">Address
+  //                         <input type="text" id="address" class="form-control" placeholder="${patient.address}">
+  //                       </div>
+  //                       <div class="list-group-item">Phone
+  //                         <input type="text" id="phone" class="form-control" placeholder="${patient.phone}">
+  //                       </div>
+  //                       <input type="submit" class="btn btn-secondary" value="Submit Change">
+  //                   </form>
+  //                   `;
+  //
+  //       document.getElementById('output').innerHTML = outputForm;
+  //
+  //     })
+  // }
+  
+  function updatePatient(e) {
+    e.preventDefault();
+    
+    let id = document.getElementById('id').value;
+    let familyName = document.getElementById('familyName').value;
+    let givenName = document.getElementById('givenName').value;
+    let birthDate = document.getElementById('birthDate').value;
+    let sex = document.getElementById('sex').value;
+    let address = document.getElementById('address').value;
+    let phone = document.getElementById('phone').value;
+    
+    fetch('http://localhost:8081/patient/update', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id,
+        familyName: familyName,
+        givenName: givenName,
+        birthDate: birthDate,
+        sex: sex,
+        address: address,
+        phone: phone
+      })
+    })
+      .then((res) => res.json())
+      .then((patient) => {
+        let output = '<h2 class="mb-4">Patient information</h2>';
+        
+        output += `
+                    <ul class="list-group mb-3" >
+                        <li class="list-group-item">Id: ${patient.id}</li>
+                        <li class="list-group-item">Family Name: ${patient.familyName}</li>
+                        <li class="list-group-item">Given Name: ${patient.givenName}</li>
+                        <li class="list-group-item">Birth date: ${patient.birthDate}</li>
+                        <li class="list-group-item">Sex: ${patient.sex}</li>
+                        <li class="list-group-item">Address: ${patient.address}</li>
+                        <li class="list-group-item">Phone: ${patient.phone}</li>
+                    </ul>
+                    `;
+        
+        document.getElementById('output').innerHTML = output;
+      })
+  }
 
-                document.getElementById('output').innerHTML = output;
-            })
-    }
 </script>
 </body>
 </html>

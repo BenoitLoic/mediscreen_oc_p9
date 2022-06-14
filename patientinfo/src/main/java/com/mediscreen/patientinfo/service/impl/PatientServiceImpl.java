@@ -89,7 +89,7 @@ public class PatientServiceImpl implements PatientService {
     for (PropertyDescriptor pd : pds) {
       Object srcValue = src.getPropertyValue(pd.getName());
       //  The judgment here can be modified according to the demand
-      if (srcValue == null) {
+      if (srcValue == null|| srcValue.equals("")) {
         emptyNames.add(pd.getName());
       }
     }

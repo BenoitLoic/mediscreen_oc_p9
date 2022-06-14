@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
