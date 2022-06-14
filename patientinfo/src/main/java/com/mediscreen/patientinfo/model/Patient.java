@@ -10,7 +10,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "patient")
 public class Patient {
-  @Id private int id;
+  @Id
+  private int id;
 
   @Column(name = "family_name")
   private String familyName;
@@ -32,12 +33,12 @@ public class Patient {
 
   public Patient() {}
 
-  public int getPatientId() {
+  public int getId() {
     return id;
   }
 
-  public void setPatientId(int patientId) {
-    this.id = patientId;
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getFamilyName() {
