@@ -1,6 +1,7 @@
 package com.mediscreen.patientinfo.service;
 
 import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 
 /**
  * Service for patient feature.
@@ -17,4 +18,12 @@ public interface PatientService {
      * @return the patient information
      */
     Patient getPatient(String familyName, String givenName);
+
+    /**
+     * Update the given patient.
+     *
+     * @param updatePatientDto the patient data to update
+     * @return the updated patient
+     */
+    Patient updatePatient(UpdatePatientDto updatePatientDto);
 }
