@@ -7,8 +7,10 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.mediscreen.patientinfo.exception.DataAlreadyExistException;
 import com.mediscreen.patientinfo.exception.DataNotFoundException;
 import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 import com.mediscreen.patientinfo.repository.PatientRepository;
 import com.mediscreen.patientinfo.service.PatientService;
@@ -76,6 +78,37 @@ public class PatientServiceImpl implements PatientService {
   }
 
   /**
+   * Create a new patient.
+   *
+   * @param createPatientDto the patient to create
+   * @return the patient saved in db
+   */
+  @Override
+  public Patient createPatient(CreatePatientDto createPatientDto) {
+    // check if patient already exist
+    Optional<Patient> optionalPatient =
+        patientRepository.findByFamilyNameAndGivenName(
+            createPatientDto.getFamilyName(), createPatientDto.getGivenName());
+    if (optionalPatient.isPresent()) {
+      logger.warn(
+          "Error, patient with familyName: "
+              + createPatientDto.getFamilyName()
+              + " and givenName: "
+              + createPatientDto.getGivenName()
+              + " already exist with id: "
+              + optionalPatient.get().getId()
+              + ".");
+      throw new DataAlreadyExistException("KO, patient already exist.");
+    }
+    // map dto to entity
+    Patient patient = new Patient();
+    BeanUtils.copyProperties(createPatientDto, patient, "id");
+    logger.trace("Save patient: " + patient.getFamilyName() + " - " + patient.getGivenName());
+    // save
+    return patientRepository.save(patient);
+  }
+
+  /**
    * Gets the properties to be ignored
    *
    * @param source the source object to ignore null properties.
@@ -89,7 +122,7 @@ public class PatientServiceImpl implements PatientService {
     for (PropertyDescriptor pd : pds) {
       Object srcValue = src.getPropertyValue(pd.getName());
       //  The judgment here can be modified according to the demand
-      if (srcValue == null|| srcValue.equals("")) {
+      if (srcValue == null || srcValue.equals("")) {
         emptyNames.add(pd.getName());
       }
     }

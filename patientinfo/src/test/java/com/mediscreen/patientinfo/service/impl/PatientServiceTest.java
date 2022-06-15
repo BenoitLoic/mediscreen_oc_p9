@@ -6,8 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.mediscreen.patientinfo.exception.DataAlreadyExistException;
 import com.mediscreen.patientinfo.exception.DataNotFoundException;
 import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 import com.mediscreen.patientinfo.repository.PatientRepository;
 import java.time.LocalDate;
@@ -115,9 +117,59 @@ class PatientServiceTest {
     updatePatientDto.setGivenName("testfirstname");
     // WHEN
     when(patientRepositoryMock.findById(anyInt())).thenReturn(Optional.of(patient));
+
     when(patientRepositoryMock.save(Mockito.any())).thenReturn(new Patient());
     // THEN
     Patient result = patientService.updatePatient(updatePatientDto);
-    assertEquals(result,patient);
+    assertEquals(result, patient);
+  }
+
+  @Test
+  void createPatient() {
+    // GIVEN
+    CreatePatientDto patient = new CreatePatientDto();
+    patient.setGivenName("nametest");
+    patient.setFamilyName("validFamilyName");
+    patient.setAddress("addresstest");
+    patient.setPhone("phonetest");
+    patient.setSex("M");
+    patient.setBirthDate(LocalDate.of(1999, 3, 20));
+
+    Patient expectedPatient = new Patient();
+    expectedPatient.setGivenName("nametest");
+    expectedPatient.setFamilyName("validFamilyName");
+    expectedPatient.setAddress("addresstest");
+    expectedPatient.setPhone("phonetest");
+    expectedPatient.setSex("M");
+    expectedPatient.setBirthDate(LocalDate.of(1999, 3, 20));
+    // WHEN
+    when(patientRepositoryMock.findByFamilyNameAndGivenName(anyString(), anyString()))
+        .thenReturn(Optional.empty());
+    when(patientRepositoryMock.save(Mockito.any())).thenReturn(new Patient());
+    // THEN
+    patientService.createPatient(patient);
+    verify(patientRepositoryMock, times(1)).save(expectedPatient);
+  }
+
+  @Test
+  void createPatient_WhenPatientAlreadyExist_ShouldThrowDataAlreadyExistException() {
+    // GIVEN
+    CreatePatientDto patient = new CreatePatientDto();
+    patient.setGivenName("nametest");
+    patient.setFamilyName("validFamilyName");
+    patient.setAddress("addresstest");
+    patient.setPhone("phonetest");
+    patient.setSex("M");
+    patient.setBirthDate(LocalDate.of(1999, 3, 20));
+
+    Patient patientFromRepo = new Patient();
+    patientFromRepo.setGivenName("nametest");
+    patientFromRepo.setFamilyName("validFamilyName");
+    patientFromRepo.setId(2);
+    // WHEN
+    when(patientRepositoryMock.findByFamilyNameAndGivenName(anyString(), anyString()))
+        .thenReturn(Optional.of(patientFromRepo));
+    // THEN}
+    assertThrows(DataAlreadyExistException.class, () -> patientService.createPatient(patient));
   }
 }

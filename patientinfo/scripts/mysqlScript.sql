@@ -25,15 +25,33 @@ VALUES ('famillyNameTest3', 'givenNameTest3', '1949-01-01', 'F', '949 mysql addr
 # Read patient with familyNameX and givenNameX
 SELECT *
 FROM `MediscreenSql`.`patient`
-where patient.family_name = 'familyNameX' and patient.given_name='givenNameX';
+where patient.family_name = 'familyNameX'
+  and patient.given_name = 'givenNameX';
 
 # Update Script
 UPDATE `MediscreenSql`.`patient`
-SET
-    `family_name` = '<{family_name: }>',
-    `given_name` = '<{given_name: }>',
+SET `family_name`   = '<{family_name: }>',
+    `given_name`    = '<{given_name: }>',
     `date_of_birth` = '<{date_of_birth: }>',
-    `sex` = '<{sex: }>',
-    `address` = '<{address: }>',
-    `phone` = '<{phone: }>'
+    `sex`           = '<{sex: }>',
+    `address`       = '<{address: }>',
+    `phone`         = '<{phone: }>'
 WHERE `id` = '<{expr}>';
+
+# Create Script
+INSERT INTO `MediscreenSql`.`patient`
+(`id`,
+ `family_name`,
+ `given_name`,
+ `date_of_birth`,
+ `sex`,
+ `address`,
+ `phone`)
+VALUES ('<{id: }>',
+        '<{family_name: }>',
+        '<{given_name: }>',
+        '<{date_of_birth: }>',
+        '<{sex: }>',
+        '<{address: }>',
+        '<{phone: }>');
+

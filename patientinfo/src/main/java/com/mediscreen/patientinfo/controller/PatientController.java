@@ -2,6 +2,7 @@ package com.mediscreen.patientinfo.controller;
 
 import org.springframework.validation.BindingResult;
 import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 
 /** Patient Controller, contain CRUD method for patient entity. */
@@ -16,11 +17,20 @@ public interface PatientController {
   Patient getPatient(String familyName, String givenName);
 
   /**
-   * Update the given patient if exist.
-   * Can throw DataNotFound if it doesn't exist, BadArgumentException if input data is incorrect
+   * Update the given patient if exist. Can throw DataNotFound if it doesn't exist,
+   * BadArgumentException if input data is incorrect
    *
    * @param patient the patient to update
    * @return the updated patient.
    */
   Patient updatePatient(UpdatePatientDto patient, BindingResult bindingResult);
+
+  /**
+   * Create a new patient. Can throw DataAlreadyExist if it already exists, BadArgumentException if
+   * input data is incorrect
+   *
+   * @param patient the patient to create
+   * @return the patient saved in db.
+   */
+  Patient createPatient(CreatePatientDto patient, BindingResult bindingResult);
 }

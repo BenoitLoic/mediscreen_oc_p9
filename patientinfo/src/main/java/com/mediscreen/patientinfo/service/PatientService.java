@@ -1,6 +1,7 @@
 package com.mediscreen.patientinfo.service;
 
 import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 
 /**
@@ -26,4 +27,12 @@ public interface PatientService {
      * @return the updated patient
      */
     Patient updatePatient(UpdatePatientDto updatePatientDto);
+
+    /**
+     * Create a new patient.
+     *
+     * @param createPatientDto the patient to create
+     * @return the patient saved in db
+     */
+    Patient createPatient(CreatePatientDto createPatientDto);
 }

@@ -12,22 +12,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mediscreen.patientinfo.exception.BadArgumentException;
+import com.mediscreen.patientinfo.exception.DataAlreadyExistException;
 import com.mediscreen.patientinfo.exception.DataNotFoundException;
 import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 import com.mediscreen.patientinfo.service.PatientService;
 import java.time.LocalDate;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = PatientControllerImpl.class)
 class PatientControllerTest {
 
-  @Autowired private MockMvc mockMvc;
-
   @MockBean PatientService patientServiceMock;
+  @Autowired private MockMvc mockMvc;
 
   @Test
   void getPatientValid() throws Exception {
@@ -164,5 +164,86 @@ class PatientControllerTest {
             result ->
                 Assertions.assertTrue(
                     result.getResolvedException() instanceof DataNotFoundException));
+  }
+
+  @Test
+  void createPatientValid() throws Exception {
+    // GIVEN
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+    CreatePatientDto patient = new CreatePatientDto();
+    patient.setGivenName("nametest");
+    patient.setFamilyName("familynametest");
+    patient.setAddress("addresstest");
+    patient.setPhone("phonetest");
+    patient.setSex("M");
+    patient.setBirthDate(LocalDate.of(1999, 3, 20));
+    String json = objectMapper.writeValueAsString(patient);
+
+    // WHEN
+    Mockito.when(patientServiceMock.createPatient(Mockito.any())).thenReturn(new Patient());
+    // THEN
+    mockMvc
+        .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isAccepted())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  void createPatientInvalid_ShouldThrowBadArgumentException() throws Exception {
+    // GIVEN
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+    CreatePatientDto patient = new CreatePatientDto();
+    patient.setGivenName("nametest");
+    patient.setFamilyName("");
+    patient.setAddress("addresstest");
+    patient.setPhone("phonetest");
+    patient.setSex("M");
+    patient.setBirthDate(LocalDate.of(1999, 3, 20));
+    String json = objectMapper.writeValueAsString(patient);
+    // WHEN
+
+    // THEN
+    mockMvc
+        .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof BadArgumentException));
+  }
+
+  @Test
+  void createPatient_ShouldThrowDataAlreadyExistException() throws Exception {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+    CreatePatientDto patient = new CreatePatientDto();
+    patient.setGivenName("nametest");
+    patient.setFamilyName("familynametest");
+    patient.setAddress("addresstest");
+    patient.setPhone("phonetest");
+    patient.setSex("M");
+    patient.setBirthDate(LocalDate.of(1999, 3, 20));
+    String json = objectMapper.writeValueAsString(patient);
+
+    // WHEN
+    Mockito.doThrow(DataAlreadyExistException.class)
+        .when(patientServiceMock)
+        .createPatient(Mockito.any());
+    // THEN
+    mockMvc
+        .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof DataAlreadyExistException));
   }
 }

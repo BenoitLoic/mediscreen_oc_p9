@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import com.mediscreen.patientinfo.controller.PatientController;
 import com.mediscreen.patientinfo.exception.BadArgumentException;
 import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 import com.mediscreen.patientinfo.service.PatientService;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 @RestController
@@ -23,11 +22,6 @@ public class PatientControllerImpl implements PatientController {
 
   Logger logger = LoggerFactory.getLogger(PatientControllerImpl.class);
   @Autowired private PatientService patientService;
-
-  @GetMapping
-  public String defaultPage() {
-    return "home";
-  }
 
   /**
    * Get the patient with the given familyName (lastname) and givenName (firstname).
@@ -68,14 +62,37 @@ public class PatientControllerImpl implements PatientController {
   public Patient updatePatient(
       @Valid @RequestBody UpdatePatientDto patient, BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
-      System.out.println(patient);
-      List<String> array = bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
-        logger.warn("Error, invalid argument:" + array);
+      List<String> array =
+          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
+      logger.warn("Error, invalid argument:" + array);
       throw new BadArgumentException("KO, invalid argument.");
     }
-    System.out.println(patient);
     logger.trace(
         "Updating patient: " + patient.getFamilyName() + " - " + patient.getGivenName() + ".");
     return patientService.updatePatient(patient);
+  }
+
+  /**
+   * Create a new patient. Can throw DataAlreadyExist if it already exists, BadArgumentException if
+   * input data is incorrect
+   *
+   * @param patient the patient to create
+   * @param bindingResult the binding result
+   * @return the patient saved in db.
+   */
+  @Override
+  @PostMapping("/add")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public Patient createPatient(
+      @Valid @RequestBody CreatePatientDto patient, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      List<String> array =
+          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
+      logger.warn("Error, invalid argument:" + array);
+      throw new BadArgumentException("KO, invalid argument.");
+    }
+    logger.trace(
+            "Creating patient: " + patient.getFamilyName() + " - " + patient.getGivenName() + ".");
+    return patientService.createPatient(patient);
   }
 }
