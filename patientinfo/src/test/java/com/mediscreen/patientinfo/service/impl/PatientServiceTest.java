@@ -144,7 +144,8 @@ class PatientServiceTest {
     expectedPatient.setBirthDate(LocalDate.of(1999, 3, 20));
     // WHEN
     when(patientRepositoryMock.findByFamilyNameAndGivenName(anyString(), anyString()))
-        .thenReturn(Optional.empty());
+        .thenReturn(Optional.empty())
+        .thenReturn(Optional.of(new Patient()));
     when(patientRepositoryMock.save(Mockito.any())).thenReturn(new Patient());
     // THEN
     patientService.createPatient(patient);

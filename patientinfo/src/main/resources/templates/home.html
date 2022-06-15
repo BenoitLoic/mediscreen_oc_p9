@@ -14,48 +14,98 @@
   
   <form id="getPatient">
     <div class="form-group">
+      <label for="family" hidden></label>
       <input class="form-control" id="family" placeholder="Family Name" type="text">
     </div>
     <div class="form-group">
+      <label for="given" hidden></label>
       <input class="form-control" id="given" placeholder="Given Name" type="text">
     </div>
-    <input class="btn btn-secondary mb-4" type="submit" value="Get patient info">
-    <button class="btn btn-success mb-4" id="updatePatientForm">Update</button>
+    <input class="btn btn-success mb-4" type="submit" value="Get patient info">
+    <!--    <button class="btn btn-success mb-4" id="updatePatientForm">Update</button>-->
   </form>
   <div id="output"></div>
 </div>
 <div class="container">
   <h2 class="mb-4">Update Patient</h2>
   <form id="updatePatient">
-    <div class="list-group-item">Id
-      <input type="text" id="id" class="form-control" placeholder="${patient.id}">
+    <div class="list-group-item">
+      <label for="idUp" class="form-label">Id</label>
+      <input type="text" id="idUp" class="form-control"
+             placeholder="*mandatory">
     </div>
-    <div class="list-group-item">Family Name
-      <input type="text" id="familyName" class="form-control" placeholder="${patient.familyName}">
+    <div class="list-group-item">
+      <label for="familyNameUp" class="form-label">Family Name</label>
+      <input type="text" id="familyNameUp"
+             class="form-control"
+             placeholder="*mandatory">
     </div>
-    <div class="list-group-item">Given Name
-      <input type="text" id="givenName" class="form-control" placeholder="${patient.givenName}">
+    <div class="list-group-item">
+      <label for="givenNameUp" class="form-label">Given Name</label>
+      <input type="text" id="givenNameUp"
+             class="form-control"
+             placeholder="*mandatory">
     </div>
-    <div class="list-group-item">Birthdate
-      <input type="text" id="birthDate" class="form-control" placeholder="${patient.birthDate}">
+    <div class="list-group-item">
+      <label for="birthDateUp" class="form-label">Birthdate</label>
+      <input type="text" id="birthDateUp"
+             class="form-control"
+             placeholder="format: aaaa-mm-dd">
     </div>
-    <div class="list-group-item">Sex
-      <input type="text" id="sex" class="form-control" placeholder="${patient.sex}">
+    <div class="list-group-item">
+      <label for="sexUp" class="form-label">Sex</label>
+      <input type="text" id="sexUp" class="form-control"
+             placeholder="ex: M">
     </div>
-    <div class="list-group-item">Address
-      <input type="text" id="address" class="form-control" placeholder="${patient.address}">
+    <div class="list-group-item">
+      <label for="addressUp" class="form-label">Address</label>
+      <input type="text" id="addressUp" class="form-control"
+             placeholder="ex: 001 main St City">
     </div>
-    <div class="list-group-item">Phone
-      <input type="text" id="phone" class="form-control" placeholder="${patient.phone}">
+    <div class="list-group-item mb-2">
+      <label for="phoneUp" class="form-label">Phone</label>
+      <input type="text" id="phoneUp" class="form-control"
+             placeholder="phone number">
     </div>
-    <input type="submit" class="btn btn-secondary" value="Submit Change">
+    <input type="submit" class="btn btn-secondary mb-4" value="Submit Change">
   </form>
 </div>
-
+<div class="container">
+  <h2 class="mb-4">Create Patient</h2>
+  <form id="createPatient">
+    <div class="list-group-item">
+      <label for="familyNameCr" class="form-label">Family Name</label>
+      <input type="text" id="familyNameCr" class="form-control" placeholder="*mandatory">
+    </div>
+    <div class="list-group-item">
+      <label for="givenNameCr" class="form-label">Given Name</label>
+      <input type="text" id="givenNameCr" class="form-control"
+             placeholder="*mandatory">
+    </div>
+    <div class="list-group-item">
+      <label for="birthDateCr" class="form-label">Birthdate</label>
+      <input type="text" id="birthDateCr" class="form-control" placeholder="*mandatory - format: aaaa-mm-dd">
+    </div>
+    <div class="list-group-item">
+      <label for="sexCr" class="form-label">Sex</label>
+      <input type="text" id="sexCr" class="form-control" placeholder="*mandatory">
+    </div>
+    <div class="list-group-item">
+      <label for="addressCr" class="form-label">Address</label>
+      <input type="text" id="addressCr" class="form-control" placeholder="*mandatory">
+    </div>
+    <div class="list-group-item mb-2">
+      <label for="phoneCr" class="form-label">Phone</label>
+      <input type="text" id="phoneCr" class="form-control" placeholder="*mandatory">
+    </div>
+    <input type="submit" class="btn btn-primary mb-4" value="Submit Change">
+  </form>
+</div>
 <script>
   document.getElementById('getPatient').addEventListener('submit', getPatient);
   // document.getElementById('updatePatientForm').addEventListener('click', updatePatientForm);
   document.getElementById('updatePatient').addEventListener('submit', updatePatient);
+  document.getElementById('createPatient').addEventListener('submit', createPatient)
   
   function getPatient(e) {
     e.preventDefault();
@@ -131,13 +181,13 @@
   function updatePatient(e) {
     e.preventDefault();
     
-    let id = document.getElementById('id').value;
-    let familyName = document.getElementById('familyName').value;
-    let givenName = document.getElementById('givenName').value;
-    let birthDate = document.getElementById('birthDate').value;
-    let sex = document.getElementById('sex').value;
-    let address = document.getElementById('address').value;
-    let phone = document.getElementById('phone').value;
+    let id = document.getElementById('idUp').value;
+    let familyName = document.getElementById('familyNameUp').value;
+    let givenName = document.getElementById('givenNameUp').value;
+    let birthDate = document.getElementById('birthDateUp').value;
+    let sex = document.getElementById('sexUp').value;
+    let address = document.getElementById('addressUp').value;
+    let phone = document.getElementById('phoneUp').value;
     
     fetch('http://localhost:8081/patient/update', {
       method: 'PUT',
@@ -172,9 +222,55 @@
                     `;
         
         document.getElementById('output').innerHTML = output;
+        document.getElementById('updatePatient').reset();
       })
   }
-
+  
+  function createPatient(e) {
+    e.preventDefault();
+    
+    let familyName = document.getElementById('familyNameCr').value;
+    let givenName = document.getElementById('givenNameCr').value;
+    let birthDate = document.getElementById('birthDateCr').value;
+    let sex = document.getElementById('sexCr').value;
+    let address = document.getElementById('addressCr').value;
+    let phone = document.getElementById('phoneCr').value;
+    
+    fetch('http://localhost:8081/patient/add', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        familyName: familyName,
+        givenName: givenName,
+        birthDate: birthDate,
+        sex: sex,
+        address: address,
+        phone: phone
+      })
+    })
+      .then((res) => res.json())
+      .then((patient) => {
+        let output = '<h2 class="mb-4">Patient information</h2>';
+        
+        output += `
+                    <ul class="list-group mb-3" >
+                        <li class="list-group-item">Id: ${patient.id}</li>
+                        <li class="list-group-item">Family Name: ${patient.familyName}</li>
+                        <li class="list-group-item">Given Name: ${patient.givenName}</li>
+                        <li class="list-group-item">Birth date: ${patient.birthDate}</li>
+                        <li class="list-group-item">Sex: ${patient.sex}</li>
+                        <li class="list-group-item">Address: ${patient.address}</li>
+                        <li class="list-group-item">Phone: ${patient.phone}</li>
+                    </ul>
+                    `;
+        
+        document.getElementById('output').innerHTML = output;
+        document.getElementById('createPatient').reset();
+      })
+  }
 </script>
 </body>
 </html>

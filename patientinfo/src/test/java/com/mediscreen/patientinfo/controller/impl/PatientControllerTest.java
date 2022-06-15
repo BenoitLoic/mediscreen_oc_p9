@@ -187,7 +187,7 @@ class PatientControllerTest {
     // THEN
     mockMvc
         .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isAccepted())
+        .andExpect(status().isCreated())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
 

@@ -105,7 +105,16 @@ public class PatientServiceImpl implements PatientService {
     BeanUtils.copyProperties(createPatientDto, patient, "id");
     logger.trace("Save patient: " + patient.getFamilyName() + " - " + patient.getGivenName());
     // save
-    return patientRepository.save(patient);
+    patientRepository.save(patient);
+    patient = this.getPatient(patient.getFamilyName(), patient.getGivenName());
+    logger.trace(
+        "Saved Patient: "
+            + patient.getFamilyName()
+            + " - "
+            + patient.getGivenName()
+            + " with id: "
+            + patient.getId());
+    return patient;
   }
 
   /**

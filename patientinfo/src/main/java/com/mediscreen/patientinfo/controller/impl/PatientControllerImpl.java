@@ -82,7 +82,7 @@ public class PatientControllerImpl implements PatientController {
    */
   @Override
   @PostMapping("/add")
-  @ResponseStatus(HttpStatus.ACCEPTED)
+  @ResponseStatus(HttpStatus.CREATED)
   public Patient createPatient(
       @Valid @RequestBody CreatePatientDto patient, BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
