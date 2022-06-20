@@ -1,17 +1,17 @@
 package com.mediscreen.patienthistory.model;
 
-import java.util.Objects;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
+/**
+ * Model for Note object.
+ * Represent the practitioner's note.
+ */
 public class Note {
 
   private LocalDateTime date;
   private String text;
 
-  public Note() {
-  }
+  public Note() {}
 
   public Note(String text) {
     this.text = text;

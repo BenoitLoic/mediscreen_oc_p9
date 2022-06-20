@@ -1,11 +1,5 @@
 package com.mediscreen.patientinfo.service.impl;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import com.mediscreen.patientinfo.exception.DataAlreadyExistException;
 import com.mediscreen.patientinfo.exception.DataNotFoundException;
 import com.mediscreen.patientinfo.model.Patient;
@@ -14,6 +8,12 @@ import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 import com.mediscreen.patientinfo.repository.PatientRepository;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;

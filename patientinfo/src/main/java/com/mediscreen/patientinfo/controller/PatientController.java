@@ -1,9 +1,9 @@
 package com.mediscreen.patientinfo.controller;
 
-import org.springframework.validation.BindingResult;
 import com.mediscreen.patientinfo.model.Patient;
 import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
+import org.springframework.validation.BindingResult;
 
 /** Patient Controller, contain CRUD method for patient entity. */
 public interface PatientController {

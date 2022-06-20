@@ -3,6 +3,10 @@ package com.mediscreen.patienthistory.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+/**
+ * Custom runtime exception called when trying to read data, but it doesn't exist in db. Http Error
+ * code 404.
+ */
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class DataNotFoundException extends RuntimeException {
   /**

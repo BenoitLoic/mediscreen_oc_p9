@@ -1,16 +1,15 @@
 package com.mediscreen.patienthistory.controller.impl;
 
+import com.mediscreen.patienthistory.exception.BadArgumentException;
+import com.mediscreen.patienthistory.exception.DataNotFoundException;
+import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.service.PatientHistoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.mediscreen.patienthistory.exception.BadArgumentException;
-import com.mediscreen.patienthistory.exception.DataNotFoundException;
-import com.mediscreen.patienthistory.model.History;
-import com.mediscreen.patienthistory.service.PatientHistoryService;
-import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -20,8 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = PatientHistoryControllerImpl.class)
 class PatientHistoryControllerImplTest {
 
-  @Autowired private MockMvc mockMvc;
   @MockBean PatientHistoryService patientHistoryServiceMock;
+  @Autowired private MockMvc mockMvc;
 
   @Test
   void getPatientHistoryValid() throws Exception {

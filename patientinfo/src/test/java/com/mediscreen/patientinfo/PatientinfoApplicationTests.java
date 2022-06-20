@@ -8,8 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Disabled
 class PatientinfoApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+  @Test
+  void contextLoads() {}
 }

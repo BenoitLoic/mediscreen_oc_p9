@@ -1,12 +1,5 @@
 package com.mediscreen.patientinfo.controller.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
 import com.mediscreen.patientinfo.controller.PatientController;
 import com.mediscreen.patientinfo.exception.BadArgumentException;
 import com.mediscreen.patientinfo.model.Patient;
@@ -15,7 +8,22 @@ import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 import com.mediscreen.patientinfo.service.PatientService;
 import java.util.List;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
+/** Implementation for Patient Rest Controller. */
 @RestController
 @RequestMapping("/patient")
 public class PatientControllerImpl implements PatientController {
@@ -92,7 +100,7 @@ public class PatientControllerImpl implements PatientController {
       throw new BadArgumentException("KO, invalid argument.");
     }
     logger.trace(
-            "Creating patient: " + patient.getFamilyName() + " - " + patient.getGivenName() + ".");
+        "Creating patient: " + patient.getFamilyName() + " - " + patient.getGivenName() + ".");
     return patientService.createPatient(patient);
   }
 }

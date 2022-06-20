@@ -7,11 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Patient entity.
+ * Represent the patient personal information.
+ */
 @Entity
 @Table(name = "patient")
 public class Patient {
-  @Id
-  private int id;
+  @Id private int id;
 
   @Column(name = "family_name")
   private String familyName;

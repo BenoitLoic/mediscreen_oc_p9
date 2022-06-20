@@ -1,10 +1,12 @@
 ### Create Collection
+
 ```
    use mediscreen_mongo; 
    db.createCollection("history");
 ```
 
 ### Populate "history" Collection.
+
 ```
 db.history.insert([
 { "_id" : "00000000000000000000001", "patientId" : NumberInt(1), "familyName" : "lastNameTest1", "givenName" : "firstNameTest1", "notes" : [ { "date" : "2022-05-20T20:44:41", "text" : "premier text" }, { "date" : "2022-06-20T20:44:41", "text" : "deuxieme text" } ] },

@@ -1,19 +1,22 @@
 package com.mediscreen.patienthistory.controller.impl;
 
+import com.mediscreen.patienthistory.controller.PatientHistoryController;
+import com.mediscreen.patienthistory.exception.BadArgumentException;
+import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.service.PatientHistoryService;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import com.mediscreen.patienthistory.controller.PatientHistoryController;
-import com.mediscreen.patienthistory.exception.BadArgumentException;
-import com.mediscreen.patienthistory.model.History;
-import com.mediscreen.patienthistory.model.Note;
-import com.mediscreen.patienthistory.service.PatientHistoryService;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
+/** Implementation for Patient History Rest Controller. */
 @RestController
 @RequestMapping("/patHistory")
 public class PatientHistoryControllerImpl implements PatientHistoryController {

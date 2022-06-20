@@ -1,9 +1,12 @@
 package com.mediscreen.patienthistory.service;
 
 import com.mediscreen.patienthistory.model.History;
-import com.mediscreen.patienthistory.model.Note;
-import java.util.Collection;
 
+/**
+ * Service for patientHistory feature.
+ *
+ * <p>contains method used for CRUD on history entity.
+ */
 public interface PatientHistoryService {
   /**
    * Get all the notes saved for the given patient.

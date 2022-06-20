@@ -1,12 +1,5 @@
 package com.mediscreen.patientinfo.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.mediscreen.patientinfo.exception.DataAlreadyExistException;
 import com.mediscreen.patientinfo.exception.DataNotFoundException;
 import com.mediscreen.patientinfo.model.Patient;
@@ -18,12 +11,56 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+/**
+ * Implementation for patient service.
+ *
+ * <p>contains method used for CRUD on patient entity.
+ */
 @Service
 public class PatientServiceImpl implements PatientService {
 
   Logger logger = LoggerFactory.getLogger(PatientServiceImpl.class);
   @Autowired private PatientRepository patientRepository;
+
+  /**
+   * Gets the properties to be ignored.
+   *
+   * @param source the source object to ignore null properties.
+   * @return String[] that contain the source object's null fields
+   */
+  private static String[] getNullPropertyNames(Object source) {
+    final BeanWrapper src = new BeanWrapperImpl(source);
+    PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+    Set<String> emptyNames = new HashSet<>();
+    for (PropertyDescriptor pd : pds) {
+      Object srcValue = src.getPropertyValue(pd.getName());
+      //  The judgment here can be modified according to the demand
+      if (srcValue == null || srcValue.equals("")) {
+        emptyNames.add(pd.getName());
+      }
+    }
+    String[] result = new String[emptyNames.size()];
+    return emptyNames.toArray(result);
+  }
+
+  /**
+   * Copy the field from the source object to the target object by ignoring null fields.
+   *
+   * @param src the source object
+   * @param target the target object
+   */
+  public static void myCopyProperties(Object src, Object target) {
+    BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
+  }
 
   /**
    * Retrieve the Patient information from repository based on its lastname and firstname.
@@ -115,37 +152,5 @@ public class PatientServiceImpl implements PatientService {
             + " with id: "
             + patient.getId());
     return patient;
-  }
-
-  /**
-   * Gets the properties to be ignored
-   *
-   * @param source the source object to ignore null properties.
-   * @return String[] that contain the source object's null fields
-   */
-  private static String[] getNullPropertyNames(Object source) {
-    final BeanWrapper src = new BeanWrapperImpl(source);
-    PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-    Set<String> emptyNames = new HashSet<>();
-    for (PropertyDescriptor pd : pds) {
-      Object srcValue = src.getPropertyValue(pd.getName());
-      //  The judgment here can be modified according to the demand
-      if (srcValue == null || srcValue.equals("")) {
-        emptyNames.add(pd.getName());
-      }
-    }
-    String[] result = new String[emptyNames.size()];
-    return emptyNames.toArray(result);
-  }
-
-  /**
-   * Copy the field from the source object to the target object by ignoring null fields.
-   *
-   * @param src the source object
-   * @param target the target object
-   */
-  public static void myCopyProperties(Object src, Object target) {
-    BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
   }
 }

@@ -1,5 +1,11 @@
 package com.mediscreen.patienthistory;
 
+import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.model.Note;
+import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,12 +25,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.mediscreen.patienthistory.model.History;
-import com.mediscreen.patienthistory.model.Note;
-import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -70,7 +70,7 @@ class PatienthistoryApplicationTests {
     // GIVEN
     History expected =
         mongoOperations.findOne(
-            Query.query(Criteria.where("familyName").is("familyName10")), History.class);
+            Query.query(Criteria.where("familyName").is("familyName1")), History.class);
 
     // WHEN
 
