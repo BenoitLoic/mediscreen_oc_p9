@@ -1,6 +1,7 @@
 package com.mediscreen.patienthistory.service;
 
 import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 
 /**
  * Service for patientHistory feature.
@@ -16,4 +17,12 @@ public interface PatientHistoryService {
    * @return collection of Note
    */
   History getPatientHistory(String familyName, String givenName);
+
+  /**
+   * Update an existing patient History.
+   *
+   * @param updateHistoryDto the history to update.
+   * @return the updated History.
+   */
+  History updatePatientHistory(UpdateHistoryDto updateHistoryDto);
 }

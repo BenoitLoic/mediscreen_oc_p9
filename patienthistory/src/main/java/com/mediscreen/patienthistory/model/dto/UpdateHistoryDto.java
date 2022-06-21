@@ -1,28 +1,19 @@
-package com.mediscreen.patienthistory.model;
+package com.mediscreen.patienthistory.model.dto;
 
+import com.mediscreen.patienthistory.model.Note;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-/** Patient History entity. */
-@Document
-public class History {
+/** Dto for updateHistory feature. Contains javax validation annotations. */
+public class UpdateHistoryDto {
 
-  @Id private String id;
-  private Integer patientId;
-  private String familyName;
-  private String givenName;
+  @NotNull private Integer patientId;
+  @NotBlank private String familyName;
+  @NotBlank private String givenName;
   private Collection<Note> notes = new ArrayList<>();
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public Integer getPatientId() {
     return patientId;
@@ -64,26 +55,22 @@ public class History {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    History history = (History) o;
-    return Objects.equals(id, history.id)
-        && Objects.equals(patientId, history.patientId)
-        && Objects.equals(familyName, history.familyName)
-        && Objects.equals(givenName, history.givenName)
-        && Objects.equals(notes, history.notes);
+    UpdateHistoryDto that = (UpdateHistoryDto) o;
+    return Objects.equals(patientId, that.patientId)
+        && Objects.equals(familyName, that.familyName)
+        && Objects.equals(givenName, that.givenName)
+        && Objects.equals(notes, that.notes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, patientId, familyName, givenName, notes);
+    return Objects.hash(patientId, familyName, givenName, notes);
   }
 
   @Override
   public String toString() {
-    return "History{"
-        + "id='"
-        + id
-        + '\''
-        + ", patientId="
+    return "UpdateHistoryDto{"
+        + "patientId="
         + patientId
         + ", familyName='"
         + familyName

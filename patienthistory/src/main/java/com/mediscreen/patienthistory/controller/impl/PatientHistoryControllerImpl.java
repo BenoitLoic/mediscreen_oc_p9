@@ -3,15 +3,20 @@ package com.mediscreen.patienthistory.controller.impl;
 import com.mediscreen.patienthistory.controller.PatientHistoryController;
 import com.mediscreen.patienthistory.exception.BadArgumentException;
 import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -53,5 +58,27 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
     logger.trace("Getting history for patient: " + givenName + " - " + familyName + ".");
 
     return patientHistoryService.getPatientHistory(familyName, givenName);
+  }
+
+  /**
+   * Update the patient history based on the patient ID. Can throw BadArgumentException if either
+   * patientId, givenName or familyName is null or blank.
+   *
+   * @param updateHistoryDto the history to update
+   * @return the updated history
+   */
+  @Override
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  @PutMapping("/update")
+  public History updatePatientHistory(
+      @Valid @RequestBody UpdateHistoryDto updateHistoryDto, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      List<String> array =
+          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
+      logger.warn("Error, invalid argument:" + array);
+      throw new BadArgumentException("KO, invalid argument.");
+    }
+    logger.trace("Update history for patient with id: " + updateHistoryDto.getPatientId());
+    return patientHistoryService.updatePatientHistory(updateHistoryDto);
   }
 }
