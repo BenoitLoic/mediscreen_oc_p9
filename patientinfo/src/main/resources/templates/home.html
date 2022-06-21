@@ -24,7 +24,10 @@
     <input class="btn btn-success mb-4" type="submit" value="Get patient info">
     <!--    <button class="btn btn-success mb-4" id="updatePatientForm">Update</button>-->
   </form>
-  <div id="output"></div>
+  <div class="container">
+    <div id="output"></div>
+    <div id="outputHistory"></div>
+  </div>
 </div>
 <div class="container">
   <h2 class="mb-4">Update Patient</h2>
@@ -130,6 +133,22 @@
                     `;
         
         document.getElementById('output').innerHTML = output;
+      })
+    fetch(`http://localhost:8082/patHistory/get?familyName=${family}&givenName=${given}`)
+      .then((response) => response.json())
+      .then((patHistory) => {
+        let outputHistory = '<h2 >Patient History</h2>';
+        for (let i = 0; i < patHistory.notes.length; i++) {
+          let note = patHistory.notes[i];
+          outputHistory += `
+                    <ul class="list-group mb-3" >
+                        <li class="list-group-item">Date: ${note.date}</li>
+                        <li class="list-group-item">Note: ${note.text}</li>
+                    </ul>
+        `;
+        
+        }
+        document.getElementById('outputHistory').innerHTML = outputHistory;
       })
   }
   

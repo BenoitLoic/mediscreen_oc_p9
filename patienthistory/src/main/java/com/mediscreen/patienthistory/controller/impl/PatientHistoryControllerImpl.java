@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +35,7 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
    * @return collection with all saved notes
    */
   @Override
+  @CrossOrigin
   @GetMapping("/get")
   @ResponseStatus(HttpStatus.OK)
   public History getPatientHistory(
@@ -49,8 +51,6 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
       throw new BadArgumentException("KO, invalid argument.");
     }
     logger.trace("Getting history for patient: " + givenName + " - " + familyName + ".");
-
-    logger.info(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString());
 
     return patientHistoryService.getPatientHistory(familyName, givenName);
   }
