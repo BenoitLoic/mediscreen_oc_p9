@@ -30,6 +30,7 @@ class PatientHistoryControllerImplTest {
   private final String invalidFamilyName = "";
   @MockBean PatientHistoryService patientHistoryServiceMock;
   @Autowired private MockMvc mockMvc;
+  @Autowired ObjectMapper objectMapper;
 
   @Test
   void getPatientHistoryValid() throws Exception {
@@ -94,8 +95,6 @@ class PatientHistoryControllerImplTest {
     updateHistoryDto.setFamilyName(familyName);
     updateHistoryDto.setGivenName(givenName);
     updateHistoryDto.setNotes(List.of(note));
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
     var json = objectMapper.writeValueAsString(updateHistoryDto);
     // WHEN
     when(patientHistoryServiceMock.updatePatientHistory(any())).thenReturn(new History());
@@ -116,8 +115,6 @@ class PatientHistoryControllerImplTest {
     updateHistoryDto.setFamilyName(invalidFamilyName);
     updateHistoryDto.setGivenName(givenName);
     updateHistoryDto.setNotes(List.of(note));
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
     var json = objectMapper.writeValueAsString(updateHistoryDto);
     // WHEN
 
@@ -140,8 +137,6 @@ class PatientHistoryControllerImplTest {
     updateHistoryDto.setFamilyName(familyName);
     updateHistoryDto.setGivenName(givenName);
     updateHistoryDto.setNotes(List.of(note));
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
     var json = objectMapper.writeValueAsString(updateHistoryDto);
     // WHEN
     doThrow(DataNotFoundException.class)

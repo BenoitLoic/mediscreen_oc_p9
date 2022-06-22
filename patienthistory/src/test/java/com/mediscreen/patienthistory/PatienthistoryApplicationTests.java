@@ -1,5 +1,6 @@
 package com.mediscreen.patienthistory;
 
+import com.mediscreen.patienthistory.config.BeanConfig;
 import com.mediscreen.patienthistory.exception.BadArgumentException;
 import com.mediscreen.patienthistory.exception.DataNotFoundException;
 import com.mediscreen.patienthistory.model.History;
@@ -46,6 +47,8 @@ class PatienthistoryApplicationTests {
 
   @Autowired MongoOperations mongoOperations;
   @Autowired MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
@@ -93,9 +96,7 @@ class PatienthistoryApplicationTests {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andReturn();
-    ObjectMapper obm = new ObjectMapper();
-    obm.registerModule(new JavaTimeModule());
-    History actual = obm.readValue(mvcResult.getResponse().getContentAsString(), History.class);
+    History actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), History.class);
     if (expected == null) {
       throw new AssertionError("TEST: Can't find patientHistory in DB.");
     }
@@ -127,8 +128,6 @@ class PatienthistoryApplicationTests {
     updateHistoryDto.setFamilyName(savedPatient.getFamilyName());
     updateHistoryDto.setGivenName(savedPatient.getGivenName());
     updateHistoryDto.setNotes(List.of(updateNote));
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
     var json = objectMapper.writeValueAsString(updateHistoryDto);
     // WHEN
 
@@ -138,6 +137,9 @@ class PatienthistoryApplicationTests {
         .andExpect(status().isAccepted());
     History updatedPatient =
         mongoOperations.findOne(Query.query(Criteria.where("patientId").is(10)), History.class);
+
+    assert updatedPatient != null;
+
     assertEquals(updatedPatient.getNotes().size(), 1);
     assertEquals(
         updatedPatient.getNotes().stream().findFirst().get().getText(), updateNote.getText());
@@ -154,8 +156,6 @@ class PatienthistoryApplicationTests {
     updateHistoryDto.setGivenName("givenName2");
     updateHistoryDto.setFamilyName("familyName2");
     updateHistoryDto.setNotes(List.of(updateNote));
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
     var json = objectMapper.writeValueAsString(updateHistoryDto);
     // WHEN
 
@@ -179,8 +179,6 @@ class PatienthistoryApplicationTests {
     dto.setFamilyName("");
     dto.setGivenName("givenNameTest3");
     dto.setNotes(List.of(updateNote));
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
     var json = objectMapper.writeValueAsString(dto);
     // WHEN
 

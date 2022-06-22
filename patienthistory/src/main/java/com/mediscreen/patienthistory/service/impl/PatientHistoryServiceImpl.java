@@ -21,7 +21,7 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
   /**
    * Get all the notes saved for the given patient.
    *
-   * @param familyName the patient family name
+   * @param familyName the patient family namenew ObjectMapper()
    * @param givenName the patient given name
    * @return collection of Note
    */
