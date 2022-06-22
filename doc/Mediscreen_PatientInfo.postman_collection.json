@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "43ad00c9-31a6-4ec9-85bc-65cf11a86dea",
+		"name": "Mediscreen_PatientInfo",
+		"description": "API patient_info de Mediscreen.\n\nPermet la création, la mise à jour et la lecture des informations personnelles des patients.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13096235"
+	},
+	"item": [
+		{
+			"name": "addPatient 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"familyName\": \"familyNameX\",\n    \"givenName\": \"givenNameX\",\n    \"birthDate\": \"2000-12-31\",\n    \"sex\": \"F\",\n    \"address\": \"56463 main St\",\n    \"phone\": \"5548 1548 4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/patient/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"add"
+					]
+				},
+				"description": "Ajouter un patient qui n'existe pas.\n\nRemarques :\n\n*   Tous les champs sont nécessaires.\n*   sex accepte uniquement des valeurs de 1 char.\n*   birthDate doit être au format: yyyy-mm-dd.\n    \n\nRéponse:\n\n``` json\n{\n    \"id\": 1,\n    \"familyName\": \"familyNameX\",\n    \"givenName\": \"givenNameX\",\n    \"birthDate\": \"2000-12-31\",\n    \"sex\": \"F\",\n    \"address\": \"56463 main St\",\n    \"phone\": \"5548 1548 4\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "addPatient 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"familyName\":\"familyNameX\",\"givenName\":\"\",\"birthDate\":\"2000-12-31\",\"sex\":\"F\",\"address\":\"56463 main St\",\"phone\":\"5548 1548 4\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/patient/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"add"
+					]
+				},
+				"description": "Ajout d'un patient avec un champ manquant."
+			},
+			"response": []
+		},
+		{
+			"name": "addPatient 409",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 409\", function () {",
+							"    pm.response.to.have.status(409);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"familyName\": \"familyNameX\",\n    \"givenName\": \"givenNameX\",\n    \"birthDate\": \"2000-12-31\",\n    \"sex\": \"F\",\n    \"address\": \"56463 main St\",\n    \"phone\": \"5548 1548 4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/patient/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"add"
+					]
+				},
+				"description": "Ajout d'un patient lorsque le familyName et givenName existe déjà."
+			},
+			"response": []
+		},
+		{
+			"name": "updatePatient 202",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"familyName\": \"newFamilyName\",\n    \"givenName\": \"Velleda\",\n    \"birthDate\": \"1900-01-02\",\n    \"sex\": \"M\",\n    \"address\": \"en face du truc rouge\",\n    \"phone\": \"0135406685\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/patient/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"update"
+					]
+				},
+				"description": "Update d'un patient existant.\n\nRemarques :\n\n*   champs obligatoires: \\[id, familyName, givenName\\]\n*   accepte uniquement des valeurs de 1 char\n*   doit être au format: yyyy-mm-dd\n    \n\nRéponse:\n\n``` json\n{\n    \"id\": 1,\n    \"familyName\": \"newFamilyName\",\n    \"givenName\": \"Velleda\",\n    \"birthDate\": \"1900-01-02\",\n    \"sex\": \"M\",\n    \"address\": \"en face du truc rouge\",\n    \"phone\": \"0135406685\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "updatePatient 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"familyName\": \"\",\n    \"givenName\": \"Velleda\",\n    \"birthDate\": \"1900-01-02\",\n    \"sex\": \"M\",\n    \"address\": \"en face du truc rouge\",\n    \"phone\": \"0135406685\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/patient/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"update"
+					]
+				},
+				"description": "Update avec un champ invalide.\n\nRéponse:\n\n*   code: 404\n*   contenu: \"Bad request\""
+			},
+			"response": []
+		},
+		{
+			"name": "updatePatient 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1000000,\n    \"familyName\": \"unknow\",\n    \"givenName\": \"user\",\n    \"birthDate\": \"1900-01-02\",\n    \"sex\": \"M\",\n    \"address\": \"en face du truc rouge\",\n    \"phone\": \"0135406685\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/patient/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"update"
+					]
+				},
+				"description": "Update d'un patient inconnu.\n\nRéponse:\n\n*   code: 404\n*   contenu: \"Not Found\""
+			},
+			"response": []
+		},
+		{
+			"name": "getPatient 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/patient/get?family=newFamilyName&given=Velleda",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"get"
+					],
+					"query": [
+						{
+							"key": "family",
+							"value": "newFamilyName"
+						},
+						{
+							"key": "given",
+							"value": "Velleda"
+						}
+					]
+				},
+				"description": "Récupération d'un patient existant.\n\nRemarque:\n\n*   les champs family et given sont obligatoires.\n*   family = nom de famille\n*   given = prénom\n    \n\nRéponse:\n\n``` json\n{\n    \"id\": 1,\n    \"familyName\": \"newFamilyName\",\n    \"givenName\": \"Velleda\",\n    \"birthDate\": \"1900-01-02\",\n    \"sex\": \"M\",\n    \"address\": \"en face du truc rouge\",\n    \"phone\": \"0135406685\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "getPatient 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/patient/get?family=Benoit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"get"
+					],
+					"query": [
+						{
+							"key": "family",
+							"value": "Benoit"
+						}
+					]
+				},
+				"description": "Tentative de récupération non valide d'un patient."
+			},
+			"response": []
+		},
+		{
+			"name": "getPatient 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/patient/get?family=Bic&given=Loic",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"patient",
+						"get"
+					],
+					"query": [
+						{
+							"key": "family",
+							"value": "Bic"
+						},
+						{
+							"key": "given",
+							"value": "Loic"
+						}
+					]
+				},
+				"description": "Tentative de lecture d'un patient inconnu."
+			},
+			"response": []
+		}
+	]
+}

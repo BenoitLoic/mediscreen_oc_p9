@@ -29,14 +29,14 @@ mvn clean test
 
 ## Name
 
-- Mediscreen patient info service.
-- Mediscreen patient history service.
+1. Mediscreen patient info service.
+2. Mediscreen patient history service.
 
 ## Description
 
-- Mediscreen microservice for Patient information. Run with spring boot on docker container with containerized Mysql<br>
+1. Mediscreen microservice for Patient information. Run with spring boot on docker container with containerized Mysql<br>
   database. This service contain a REST API to interact with patient information.<br>
-- Mediscreen microservice for Patient history. Run with spring boot on docker container with containerized MongoDb<br>
+2. Mediscreen microservice for Patient history. Run with spring boot on docker container with containerized MongoDb<br>
   database. This service contain a REST API to interact with patient history that contains notes(Practitioner's<br>
   notes/recommendations).
 
@@ -51,6 +51,11 @@ docker-compose up --build
 
 ## Usage
 
-Access front at http://localhost:8081/ <br>
-Access API endpoints at http://localhost:8081/patient/{endpoint}
+1. Access front at http://localhost:8081/ <br>
+2. Access API endpoints at http://localhost:8081/patient/{endpoint}
 
+## API Doc
+API documentations are located in /doc . Import in Postman, then select "view documentation".
+<br>API doc can also be seen online:
+1. patientInfo : https://documenter.getpostman.com/view/13096235/UzBpK5uS
+2. patientHistory: https://documenter.getpostman.com/view/13096235/UzBpKm6f

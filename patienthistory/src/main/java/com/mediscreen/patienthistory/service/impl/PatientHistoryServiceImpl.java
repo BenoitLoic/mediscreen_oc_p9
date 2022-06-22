@@ -1,14 +1,17 @@
 package com.mediscreen.patienthistory.service.impl;
 
+import com.mediscreen.patienthistory.exception.DataAlreadyExistException;
 import com.mediscreen.patienthistory.exception.DataNotFoundException;
 import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.Note;
+import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,5 +95,31 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
             + " fields for patient history with id="
             + patientHistory.getPatientId());
     return patientHistoryRepository.save(patientHistory);
+  }
+
+  /**
+   * Create a new History. Can throw DataAlreadyExistException if history.patientId already exist in
+   * db.
+   *
+   * @param addPatientHistoryDto the history to create.
+   * @return the History saved.
+   */
+  @Override
+  public History createPatientHistory(AddPatientHistoryDto addPatientHistoryDto) {
+
+    // check if history already exist
+    Optional<History> savedHistory =
+        patientHistoryRepository.findHistoryByPatientId(addPatientHistoryDto.getPatientId());
+    if (savedHistory.isPresent()) {
+      logger.warn(
+          "Error, History already exist for patient id=" + addPatientHistoryDto.getPatientId());
+      throw new DataAlreadyExistException("KO, patientHistory already exist.");
+    }
+    // map dto to History
+    History history = new History();
+    BeanUtils.copyProperties(addPatientHistoryDto, history);
+    // save
+    logger.trace("Saving new history.");
+    return patientHistoryRepository.save(history);
   }
 }

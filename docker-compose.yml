@@ -17,16 +17,16 @@ services:
     volumes:
       - mysql_db:/var/lib/mysql/
 
-  mongodb:
-    image: mongo
-    environment:
-      - MONGO_INITDB_DATABASE=mediscreen_mongo
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=mroot
-    ports:
-      - "27018:27017"
-    volumes:
-      - mongo_db:/var/lib/mongo
+#  mongodb:
+#    image: mongo
+#    environment:
+#      - MONGO_INITDB_DATABASE=mediscreen_mongo
+#      - MONGO_INITDB_ROOT_USERNAME=root
+#      - MONGO_INITDB_ROOT_PASSWORD=mroot
+#    ports:
+#      - "27018:27017"
+#    volumes:
+#      - mongo_db:/var/lib/mongo
 
   patient_info:
     depends_on:

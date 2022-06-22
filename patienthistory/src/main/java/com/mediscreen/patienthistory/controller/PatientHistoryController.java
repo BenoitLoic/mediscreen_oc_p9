@@ -1,6 +1,7 @@
 package com.mediscreen.patienthistory.controller;
 
 import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import org.springframework.validation.BindingResult;
 
@@ -25,4 +26,15 @@ public interface PatientHistoryController {
    * @return the updated history
    */
   History updatePatientHistory(UpdateHistoryDto updateHistoryDto, BindingResult bindingResult);
+
+  /**
+   * Create a new patient history.Can throw BadArgumentException if either * patientId, givenName or
+   * familyName is null or blank. Can throw DataAlreadyExistException if patientId is already
+   * present in db.
+   *
+   * @param addPatientHistoryDto the history to create
+   * @return the history created
+   */
+  History createPatientHistory(
+      AddPatientHistoryDto addPatientHistoryDto, BindingResult bindingResult);
 }

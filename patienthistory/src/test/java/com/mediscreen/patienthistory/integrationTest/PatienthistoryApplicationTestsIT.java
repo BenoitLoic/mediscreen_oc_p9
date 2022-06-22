@@ -1,14 +1,15 @@
-package com.mediscreen.patienthistory;
+package com.mediscreen.patienthistory.integrationTest;
 
-import com.mediscreen.patienthistory.config.BeanConfig;
+import com.mediscreen.patienthistory.PatienthistoryApplication;
 import com.mediscreen.patienthistory.exception.BadArgumentException;
+import com.mediscreen.patienthistory.exception.DataAlreadyExistException;
 import com.mediscreen.patienthistory.exception.DataNotFoundException;
 import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.Note;
+import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -30,25 +31,22 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = PatienthistoryApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class PatienthistoryApplicationTests {
-  Logger logger = LoggerFactory.getLogger(PatienthistoryApplicationTests.class);
+class PatienthistoryApplicationTestsIT {
+  Logger logger = LoggerFactory.getLogger(PatienthistoryApplicationTestsIT.class);
 
   @Autowired PatientHistoryRepository patientHistoryRepository;
 
   @Autowired MongoOperations mongoOperations;
   @Autowired MockMvc mockMvc;
-  @Autowired
-  ObjectMapper objectMapper;
+  @Autowired ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
@@ -96,7 +94,8 @@ class PatienthistoryApplicationTests {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andReturn();
-    History actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), History.class);
+    History actual =
+        objectMapper.readValue(mvcResult.getResponse().getContentAsString(), History.class);
     if (expected == null) {
       throw new AssertionError("TEST: Can't find patientHistory in DB.");
     }
@@ -188,5 +187,66 @@ class PatienthistoryApplicationTests {
         .andExpect(status().isBadRequest())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof BadArgumentException));
+  }
+
+  @Test
+  void createPatientHistoryValid() throws Exception {
+    // GIVEN
+    AddPatientHistoryDto addHistory =
+        new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
+    Note note = new Note("test text");
+    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    addHistory.getNotes().add(note);
+    String json = objectMapper.writeValueAsString(addHistory);
+    // WHEN
+
+    // THEN
+    mockMvc
+        .perform(post("/patHistory/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated());
+    History patient =
+        mongoOperations.findOne(Query.query(Criteria.where("patientId").is(5)), History.class);
+    assertNotNull(patient);
+    assertNotNull(patient.getId());
+  }
+
+  @Test
+  void createPatientHistoryInvalid_ShouldThrowBadArgumentException() throws Exception {
+    // GIVEN
+    AddPatientHistoryDto addHistory =
+            new AddPatientHistoryDto(5, "", "createGivenNameTest");
+    Note note = new Note("test text");
+    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    addHistory.getNotes().add(note);
+    String json = objectMapper.writeValueAsString(addHistory);
+    // WHEN
+
+    // THEN
+    mockMvc
+        .perform(post("/patHistory/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof BadArgumentException));
+  }
+
+  @Test
+  void createPatientHistory_WhenHistoryAlreadyExist_ShouldThrowDataAlreadyExistException() throws Exception {
+    // GIVEN
+    AddPatientHistoryDto addHistory =
+            new AddPatientHistoryDto(1, "createFamilyNameTest", "createGivenNameTest");
+    Note note = new Note("test text");
+    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    addHistory.getNotes().add(note);
+    String json = objectMapper.writeValueAsString(addHistory);
+
+    // WHEN
+
+    // THEN
+    mockMvc
+        .perform(post("/patHistory/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(
+            result ->
+                assertTrue(result.getResolvedException() instanceof DataAlreadyExistException));
   }
 }
