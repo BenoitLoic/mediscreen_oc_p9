@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** Implementation for Patient History Rest Controller. */
 @RestController
+@CrossOrigin
 @RequestMapping("/patHistory")
 public class PatientHistoryControllerImpl implements PatientHistoryController {
 
@@ -34,7 +35,6 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
    * @return collection with all saved notes
    */
   @Override
-  @CrossOrigin
   @GetMapping("/get")
   @ResponseStatus(HttpStatus.OK)
   public History getPatientHistory(
@@ -82,7 +82,6 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
    * present in db.
    *
    * @param addPatientHistoryDto the history to create
-   * @param bindingResult
    * @return the history created
    */
   @Override
