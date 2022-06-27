@@ -4,6 +4,7 @@ import com.mediscreen.patienthistory.exception.DataAlreadyExistException;
 import com.mediscreen.patienthistory.exception.DataNotFoundException;
 import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.Note;
+import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
@@ -176,14 +177,15 @@ class PatientHistoryServiceTest {
     // GIVEN
     AddPatientHistoryDto addHistory =
         new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+    Note note = new Note();
+    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    note.setText("test text");
+    addHistory.setTextNote("test text");
     History history = new History();
     history.setPatientId(addHistory.getPatientId());
     history.setGivenName(addHistory.getGivenName());
     history.setFamilyName(addHistory.getFamilyName());
-    history.setNotes(addHistory.getNotes());
+    history.setNotes(List.of(note));
     // WHEN
     when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
         .thenReturn(Optional.empty());
@@ -200,9 +202,8 @@ class PatientHistoryServiceTest {
     // GIVEN
     AddPatientHistoryDto addHistory =
         new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+
+    addHistory.setTextNote("test text");
 
     // WHEN
     when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
@@ -211,5 +212,54 @@ class PatientHistoryServiceTest {
     assertThrows(
         DataAlreadyExistException.class,
         () -> patientHistoryService.createPatientHistory(addHistory));
+  }
+
+  @Test
+  void createPatientHistoryNote() {
+    // GIVEN
+    Note note1 = new Note("azerty qsdfg wxcv");
+    Note note2 = new Note("azerty qdsfsdgsdf  zéez tt");
+    note1.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    note2.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    History savedHistory = new History();
+    savedHistory.setGivenName(givenName);
+    savedHistory.setFamilyName(familyName);
+    savedHistory.setPatientId(50);
+    savedHistory.setNotes(List.of(note1, note2));
+
+    AddNoteDto addNote = new AddNoteDto();
+    addNote.setTextNote("test");
+    addNote.setPatientId(50);
+
+    Note newNote = new Note();
+    newNote.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    newNote.setText("test");
+    History expected = new History();
+    expected.setGivenName(givenName);
+    expected.setFamilyName(familyName);
+    expected.setPatientId(50);
+    expected.setNotes(List.of(note1, note2, newNote));
+
+    // WHEN
+    when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.of(savedHistory));
+    // THEN
+    patientHistoryService.createPatientHistoryNote(addNote);
+    verify(patientHistoryRepositoryMock, times(1)).save(expected);
+  }
+
+  @Test
+  void createPatientHistoryNote_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
+    // GIVEN
+    AddNoteDto addNote = new AddNoteDto();
+    addNote.setTextNote("test");
+    addNote.setPatientId(1);
+
+    // WHEN
+    when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.empty());
+    // THEN
+    assertThrows(
+        DataNotFoundException.class, () -> patientHistoryService.createPatientHistoryNote(addNote));
   }
 }

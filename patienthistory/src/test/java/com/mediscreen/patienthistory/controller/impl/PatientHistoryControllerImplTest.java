@@ -5,6 +5,7 @@ import com.mediscreen.patienthistory.exception.DataAlreadyExistException;
 import com.mediscreen.patienthistory.exception.DataNotFoundException;
 import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.Note;
+import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
@@ -158,9 +159,7 @@ class PatientHistoryControllerImplTest {
     // GIVEN
     AddPatientHistoryDto addHistory =
         new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+    addHistory.setTextNote("test text");
     String json = objectMapper.writeValueAsString(addHistory);
     // WHEN
     when(patientHistoryServiceMock.createPatientHistory(Mockito.any(AddPatientHistoryDto.class)))
@@ -176,9 +175,7 @@ class PatientHistoryControllerImplTest {
   void createPatientHistoryInvalid_ShouldThrowBadArgumentException() throws Exception {
     // GIVEN
     AddPatientHistoryDto addHistory = new AddPatientHistoryDto(5, "", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+    addHistory.setTextNote("test text");
     String json = objectMapper.writeValueAsString(addHistory);
     // WHEN
 
@@ -196,9 +193,7 @@ class PatientHistoryControllerImplTest {
     // GIVEN
     AddPatientHistoryDto addHistory =
         new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+    addHistory.setTextNote("test text");
     String json = objectMapper.writeValueAsString(addHistory);
     // WHEN
     doThrow(DataAlreadyExistException.class)
@@ -211,5 +206,56 @@ class PatientHistoryControllerImplTest {
         .andExpect(
             result ->
                 assertTrue(result.getResolvedException() instanceof DataAlreadyExistException));
+  }
+
+  @Test
+  void createNoteValid() throws Exception {
+    // GIVEN
+    AddNoteDto addNoteDto = new AddNoteDto();
+    addNoteDto.setPatientId(1);
+    addNoteDto.setTextNote("test text");
+    String json = objectMapper.writeValueAsString(addNoteDto);
+    // WHEN
+    when(patientHistoryServiceMock.createPatientHistoryNote(any())).thenReturn(new History());
+    // THEN
+    mockMvc
+        .perform(post("/patHistory/note/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  void createNoteInvalid_ShouldThrowBadArgumentException() throws Exception {
+    // GIVEN
+    AddNoteDto addNoteDto = new AddNoteDto();
+    addNoteDto.setTextNote("test text");
+    String json = objectMapper.writeValueAsString(addNoteDto);
+    // WHEN
+
+    // THEN
+    mockMvc
+        .perform(post("/patHistory/note/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof BadArgumentException));
+  }
+
+  @Test
+  void createNote_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() throws Exception {
+    // GIVEN
+    AddNoteDto addNoteDto = new AddNoteDto();
+    addNoteDto.setPatientId(1);
+    addNoteDto.setTextNote("test text");
+    String json = objectMapper.writeValueAsString(addNoteDto);
+    // WHEN
+    doThrow(DataNotFoundException.class)
+        .when(patientHistoryServiceMock)
+        .createPatientHistoryNote(any());
+    // THEN
+    mockMvc
+        .perform(post("/patHistory/note/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof DataNotFoundException));
   }
 }

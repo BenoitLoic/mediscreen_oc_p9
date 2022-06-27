@@ -3,6 +3,7 @@ package com.mediscreen.patienthistory.controller.impl;
 import com.mediscreen.patienthistory.controller.PatientHistoryController;
 import com.mediscreen.patienthistory.exception.BadArgumentException;
 import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
@@ -91,11 +92,31 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
       @Valid @RequestBody AddPatientHistoryDto addPatientHistoryDto, BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
       List<String> array =
-              bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
+          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
       logger.warn("Error, invalid argument:" + array);
       throw new BadArgumentException("KO, invalid argument.");
     }
     logger.trace("Create history for patient with id: " + addPatientHistoryDto.getPatientId());
     return patientHistoryService.createPatientHistory(addPatientHistoryDto);
+  }
+
+  /**
+   * Create a new Note. Can throw BadArgumentException if either patientId or text is null.
+   *
+   * @param addNote the note to create
+   * @return the patient history
+   */
+  @Override
+  @PostMapping("/note/add")
+  @ResponseStatus(HttpStatus.CREATED)
+  public History addNote(@Valid @RequestBody AddNoteDto addNote, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      List<String> array =
+          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
+      logger.warn("Error, invalid argument:" + array);
+      throw new BadArgumentException("KO, invalid argument.");
+    }
+    logger.trace("Create new note for patient with id: " + addNote.getPatientId());
+    return patientHistoryService.createPatientHistoryNote(addNote);
   }
 }

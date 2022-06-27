@@ -1,6 +1,7 @@
 package com.mediscreen.patienthistory.service;
 
 import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 
@@ -35,4 +36,11 @@ public interface PatientHistoryService {
    * @return the History saved.
    */
   History createPatientHistory(AddPatientHistoryDto addPatientHistoryDto);
+
+  /**
+   * Create a new Note for the given History
+   * @param addNoteDto the note to add
+   * @return the patient's history
+   */
+  History createPatientHistoryNote(AddNoteDto addNoteDto);
 }

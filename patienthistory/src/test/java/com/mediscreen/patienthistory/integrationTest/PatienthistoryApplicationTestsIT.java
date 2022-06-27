@@ -194,9 +194,7 @@ class PatienthistoryApplicationTestsIT {
     // GIVEN
     AddPatientHistoryDto addHistory =
         new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+    addHistory.setTextNote("test text");
     String json = objectMapper.writeValueAsString(addHistory);
     // WHEN
 
@@ -213,11 +211,8 @@ class PatienthistoryApplicationTestsIT {
   @Test
   void createPatientHistoryInvalid_ShouldThrowBadArgumentException() throws Exception {
     // GIVEN
-    AddPatientHistoryDto addHistory =
-            new AddPatientHistoryDto(5, "", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+    AddPatientHistoryDto addHistory = new AddPatientHistoryDto(5, "", "createGivenNameTest");
+    addHistory.setTextNote("test text");
     String json = objectMapper.writeValueAsString(addHistory);
     // WHEN
 
@@ -230,13 +225,12 @@ class PatienthistoryApplicationTestsIT {
   }
 
   @Test
-  void createPatientHistory_WhenHistoryAlreadyExist_ShouldThrowDataAlreadyExistException() throws Exception {
+  void createPatientHistory_WhenHistoryAlreadyExist_ShouldThrowDataAlreadyExistException()
+      throws Exception {
     // GIVEN
     AddPatientHistoryDto addHistory =
-            new AddPatientHistoryDto(1, "createFamilyNameTest", "createGivenNameTest");
-    Note note = new Note("test text");
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    addHistory.getNotes().add(note);
+        new AddPatientHistoryDto(1, "createFamilyNameTest", "createGivenNameTest");
+    addHistory.setTextNote("test text");
     String json = objectMapper.writeValueAsString(addHistory);
 
     // WHEN

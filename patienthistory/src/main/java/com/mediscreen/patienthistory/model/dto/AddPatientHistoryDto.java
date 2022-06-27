@@ -1,23 +1,17 @@
 package com.mediscreen.patienthistory.model.dto;
 
-import com.mediscreen.patienthistory.model.Note;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-/**
- * Dto for patient history creation.
- */
+/** Dto for patient history creation. */
 public class AddPatientHistoryDto {
   @NotNull private Integer patientId;
   @NotBlank private String familyName;
   @NotBlank private String givenName;
-  private final Collection<Note> notes = new ArrayList<>();
+  @NotNull private String textNote;
 
-  public AddPatientHistoryDto() {
-  }
+  public AddPatientHistoryDto() {}
 
   public AddPatientHistoryDto(Integer patientId, String familyName, String givenName) {
     this.patientId = patientId;
@@ -37,8 +31,29 @@ public class AddPatientHistoryDto {
     return givenName;
   }
 
-  public Collection<Note> getNotes() {
-    return notes;
+  public String getTextNote() {
+    return textNote;
+  }
+
+  public void setTextNote(String textNote) {
+    this.textNote = textNote;
+  }
+
+  @Override
+  public String toString() {
+    return "AddPatientHistoryDto{"
+        + "patientId="
+        + patientId
+        + ", familyName='"
+        + familyName
+        + '\''
+        + ", givenName='"
+        + givenName
+        + '\''
+        + ", textNote='"
+        + textNote
+        + '\''
+        + '}';
   }
 
   @Override
@@ -53,27 +68,11 @@ public class AddPatientHistoryDto {
     return Objects.equals(patientId, that.patientId)
         && Objects.equals(familyName, that.familyName)
         && Objects.equals(givenName, that.givenName)
-        && Objects.equals(notes, that.notes);
+        && Objects.equals(textNote, that.textNote);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(patientId, familyName, givenName, notes);
-  }
-
-  @Override
-  public String toString() {
-    return "AddPatientHistoryDto{"
-        + "patientId="
-        + patientId
-        + ", familyName='"
-        + familyName
-        + '\''
-        + ", givenName='"
-        + givenName
-        + '\''
-        + ", notes="
-        + notes
-        + '}';
+    return Objects.hash(patientId, familyName, givenName, textNote);
   }
 }

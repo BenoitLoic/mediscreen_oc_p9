@@ -4,10 +4,16 @@ import com.mediscreen.patienthistory.exception.DataAlreadyExistException;
 import com.mediscreen.patienthistory.exception.DataNotFoundException;
 import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.Note;
+import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,8 +124,40 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
     // map dto to History
     History history = new History();
     BeanUtils.copyProperties(addPatientHistoryDto, history);
+    Note note = new Note();
+    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    note.setText(addPatientHistoryDto.getTextNote());
+    history.setNotes(List.of(note));
+    System.out.println("dto = " + addPatientHistoryDto);
+    System.out.println("entity = " + history);
     // save
     logger.trace("Saving new history.");
     return patientHistoryRepository.save(history);
+  }
+
+  /**
+   * Create a new Note for the given History
+   *
+   * @param addNoteDto the note to add
+   * @return the patient's history
+   */
+  @Override
+  public History createPatientHistoryNote(AddNoteDto addNoteDto) {
+    // check if history exist
+    Optional<History> savedHistory =
+        patientHistoryRepository.findHistoryByPatientId(addNoteDto.getPatientId());
+    if (savedHistory.isEmpty()) {
+      logger.warn("Error, can't find patient history for id: " + addNoteDto.getPatientId());
+      throw new DataNotFoundException("KO, patient history doesn't exist.");
+    }
+    Note noteToAdd = new Note();
+    noteToAdd.setText(addNoteDto.getTextNote());
+    noteToAdd.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    History historyToSave = savedHistory.get();
+    Collection<Note> notes =new ArrayList<>( historyToSave.getNotes());
+    notes.add(noteToAdd);
+    historyToSave.setNotes(notes);
+    // save
+    return patientHistoryRepository.save(historyToSave);
   }
 }
