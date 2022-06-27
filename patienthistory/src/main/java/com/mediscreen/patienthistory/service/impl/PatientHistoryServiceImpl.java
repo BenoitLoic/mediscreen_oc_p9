@@ -7,14 +7,13 @@ import com.mediscreen.patienthistory.model.Note;
 import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
 import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -154,10 +153,38 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
     noteToAdd.setText(addNoteDto.getTextNote());
     noteToAdd.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
     History historyToSave = savedHistory.get();
-    Collection<Note> notes =new ArrayList<>( historyToSave.getNotes());
+    Collection<Note> notes = new ArrayList<>(historyToSave.getNotes());
     notes.add(noteToAdd);
     historyToSave.setNotes(notes);
     // save
     return patientHistoryRepository.save(historyToSave);
+  }
+
+  /**
+   * Update a Note from an existing Patient History.
+   *
+   * @param updateNoteDto the note to update.
+   * @return the patient history updated.
+   */
+  @Override
+  public History updatePatientHistoryNote(UpdateNoteDto updateNoteDto) {
+    // check if history exist
+    Optional<History> savedHistory =
+        patientHistoryRepository.findHistoryByPatientId(updateNoteDto.getPatientId());
+    if (savedHistory.isEmpty()) {
+      logger.warn("Error, can't find patient history for id: " + updateNoteDto.getPatientId());
+      throw new DataNotFoundException("KO, patient history doesn't exist.");
+    }
+    History history = savedHistory.get();
+    for (Note note:history.getNotes()){
+      if (note.getDate().equals(updateNoteDto.getDate())){
+        logger.trace("Updating text.");
+        note.setText(updateNoteDto.getText());
+        break;
+      }
+    }
+
+    return patientHistoryRepository.save(history);
+
   }
 }

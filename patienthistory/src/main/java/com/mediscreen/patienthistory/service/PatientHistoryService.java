@@ -4,6 +4,7 @@ import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
 
 /**
  * Service for patientHistory feature.
@@ -29,8 +30,7 @@ public interface PatientHistoryService {
   History updatePatientHistory(UpdateHistoryDto updateHistoryDto);
 
   /**
-   * Create a new History.
-   * Can throw DataAlreadyExistException if history already exist in db.
+   * Create a new History. Can throw DataAlreadyExistException if history already exist in db.
    *
    * @param addPatientHistoryDto the history to create.
    * @return the History saved.
@@ -38,9 +38,18 @@ public interface PatientHistoryService {
   History createPatientHistory(AddPatientHistoryDto addPatientHistoryDto);
 
   /**
-   * Create a new Note for the given History
-   * @param addNoteDto the note to add
-   * @return the patient's history
+   * Create a new Note for the given History.
+   *
+   * @param addNoteDto the note to add.
+   * @return the patient's history.
    */
   History createPatientHistoryNote(AddNoteDto addNoteDto);
+
+  /**
+   * Update a Note from an existing Patient History.
+   *
+   * @param updateNoteDto the note to update.
+   * @return the patient history updated.
+   */
+  History updatePatientHistoryNote(UpdateNoteDto updateNoteDto);
 }

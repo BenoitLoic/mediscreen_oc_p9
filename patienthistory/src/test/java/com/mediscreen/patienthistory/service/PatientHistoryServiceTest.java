@@ -7,6 +7,7 @@ import com.mediscreen.patienthistory.model.Note;
 import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
 import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
 import com.mediscreen.patienthistory.service.impl.PatientHistoryServiceImpl;
 import java.time.LocalDateTime;
@@ -261,5 +262,55 @@ class PatientHistoryServiceTest {
     // THEN
     assertThrows(
         DataNotFoundException.class, () -> patientHistoryService.createPatientHistoryNote(addNote));
+  }
+
+  @Test
+  void updatePatientHistoryNote() {
+    // GIVEN
+    LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+    UpdateNoteDto noteToUpdate = new UpdateNoteDto();
+    noteToUpdate.setPatientId(1);
+    noteToUpdate.setText("updatedText");
+    noteToUpdate.setDate(date);
+
+    Note note1 = new Note("azerty qsdfg wxcv");
+    Note note2 = new Note("azerty qdsfsdgsdf  zéez tt");
+    note1.setDate(date);
+    note2.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusDays(1));
+    History savedHistory = new History();
+    savedHistory.setGivenName(givenName);
+    savedHistory.setFamilyName(familyName);
+    savedHistory.setPatientId(1);
+    savedHistory.setNotes(List.of(note1, note2));
+    History expected = new History();
+    expected.setGivenName(givenName);
+    expected.setFamilyName(familyName);
+    expected.setPatientId(1);
+    Note newNote = new Note();
+    newNote.setDate(noteToUpdate.getDate());
+    newNote.setText(noteToUpdate.getText());
+    expected.setNotes(List.of(newNote, note2));
+
+    // WHEN
+    when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.of(savedHistory));
+    when(patientHistoryRepositoryMock.save(any())).thenReturn(new History());
+    // THEN
+    patientHistoryService.updatePatientHistoryNote(noteToUpdate);
+    verify(patientHistoryRepositoryMock, times(1)).findHistoryByPatientId(1);
+    verify(patientHistoryRepositoryMock, times(1)).save(expected);
+  }
+
+  @Test
+  void updatePatientHistoryNote_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
+    // GIVEN
+UpdateNoteDto updateNoteDto = new UpdateNoteDto();
+updateNoteDto.setPatientId(1);
+    // WHEN
+    when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.empty());
+    // THEN
+    assertThrows(
+        DataNotFoundException.class, () -> patientHistoryService.updatePatientHistoryNote(updateNoteDto));
   }
 }

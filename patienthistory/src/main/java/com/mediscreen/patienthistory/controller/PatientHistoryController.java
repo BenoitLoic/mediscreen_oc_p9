@@ -4,6 +4,7 @@ import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
 import org.springframework.validation.BindingResult;
 
 /** Interface for Patient History Rest API. */
@@ -46,4 +47,12 @@ public interface PatientHistoryController {
    * @return the patient history
    */
   History addNote(AddNoteDto addNoteDto,BindingResult bindingResult);
+
+  /**
+   * Update the note from an existing patient history.
+   *
+   * @param updateNoteDto the note to update.
+   * @return the updated history
+   */
+  History updateNote(UpdateNoteDto updateNoteDto,BindingResult bindingResult);
 }

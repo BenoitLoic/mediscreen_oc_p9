@@ -6,6 +6,7 @@ import com.mediscreen.patienthistory.model.History;
 import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
 import java.util.List;
 import javax.validation.Valid;
@@ -118,5 +119,25 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
     }
     logger.trace("Create new note for patient with id: " + addNote.getPatientId());
     return patientHistoryService.createPatientHistoryNote(addNote);
+  }
+
+  /**
+   * Update the note from an existing patient history.
+   *
+   * @param updateNoteDto the note to update.
+   * @return the updated history
+   */
+  @Override
+  @PutMapping("/note/update")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public History updateNote(@Valid @RequestBody UpdateNoteDto updateNoteDto, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      List<String> array =
+              bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
+      logger.warn("Error, invalid argument:" + array);
+      throw new BadArgumentException("KO, invalid argument.");
+    }
+    logger.trace("Update note for patient with id: " + updateNoteDto.getPatientId());
+    return patientHistoryService.updatePatientHistoryNote(updateNoteDto);
   }
 }

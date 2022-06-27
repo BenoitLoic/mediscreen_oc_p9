@@ -8,6 +8,7 @@ import com.mediscreen.patienthistory.model.Note;
 import com.mediscreen.patienthistory.model.dto.AddNoteDto;
 import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -254,6 +255,62 @@ class PatientHistoryControllerImplTest {
     // THEN
     mockMvc
         .perform(post("/patHistory/note/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof DataNotFoundException));
+  }
+
+  @Test
+  void updateNoteValid() throws Exception {
+    // GIVEN
+    UpdateNoteDto updateNoteDto = new UpdateNoteDto();
+    updateNoteDto.setPatientId(1);
+    updateNoteDto.setText("test text");
+    updateNoteDto.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    String json = objectMapper.writeValueAsString(updateNoteDto);
+    // WHEN
+    when(patientHistoryServiceMock.updatePatientHistoryNote(any())).thenReturn(new History());
+    // THEN
+    mockMvc
+        .perform(
+            put("/patHistory/note/update").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isAccepted())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  void updateNoteInvalid_ShouldThrowBadArgumentException() throws Exception {
+    // GIVEN
+    UpdateNoteDto updateNoteDto = new UpdateNoteDto();
+    updateNoteDto.setPatientId(1);
+    updateNoteDto.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    String json = objectMapper.writeValueAsString(updateNoteDto);
+    // WHEN
+    // THEN
+    mockMvc
+        .perform(
+            put("/patHistory/note/update").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result -> assertTrue(result.getResolvedException() instanceof BadArgumentException));
+  }
+
+  @Test
+  void updateNote_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() throws Exception {
+    // GIVEN
+    UpdateNoteDto updateNoteDto = new UpdateNoteDto();
+    updateNoteDto.setPatientId(1);
+    updateNoteDto.setText("test text");
+    updateNoteDto.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    String json = objectMapper.writeValueAsString(updateNoteDto);
+    // WHEN
+    doThrow(DataNotFoundException.class)
+        .when(patientHistoryServiceMock)
+        .updatePatientHistoryNote(any());
+    // THEN
+    mockMvc
+        .perform(
+            put("/patHistory/note/update").content(json).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof DataNotFoundException));
