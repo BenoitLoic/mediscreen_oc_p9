@@ -51,8 +51,10 @@ docker-compose up --build
 
 ## Usage
 
-1. Access front at http://localhost:8081/ <br>
+1. Access front at http://localhost:4200/ <br>
 2. Access API endpoints at http://localhost:8081/patient/{endpoint}
+                           http://localhost:8082/patHistory/{endpoint}
+                           http://localhost:8082/patHistory/note/{endpoint} 
 
 ## API Doc
 API documentations are located in /doc . Import in Postman, then select "view documentation".
