@@ -2,9 +2,7 @@ package com.mediscreen.patientassessment.controller;
 
 import com.mediscreen.patientassessment.model.Assessment;
 
-/**
- * Rest Controller for Assess feature.
- */
+/** Rest Controller for Assess feature. */
 public interface AssessController {
   /**
    * Get assess for the given patient defined by its id.

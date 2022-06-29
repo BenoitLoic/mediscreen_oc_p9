@@ -50,6 +50,7 @@ services:
       mysqldb:
         condition: service_healthy
     build: ./patientinfo
+    container_name: patient-info
     restart: on-failure
     ports:
       - "8081:8081"
@@ -62,7 +63,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - "8080:8080"
+      - "8085:8080"
 
   patient_history:
     depends_on:

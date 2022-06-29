@@ -25,8 +25,7 @@ class AssessControllerTest {
   private final String givenName = "givenNameTest";
   private final int patientId = 5;
   @Autowired private MockMvc mockMvc;
-  @MockBean
-  private AssessService assessService;
+  @MockBean private AssessService assessService;
 
   @Test
   void getAssessWithIdValid() throws Exception {

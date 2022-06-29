@@ -1,6 +1,7 @@
 package com.mediscreen.patientassessment.service;
 
 import com.mediscreen.patientassessment.constant.AssessMessages;
+import com.mediscreen.patientassessment.exception.DataNotFoundException;
 import com.mediscreen.patientassessment.feign.PatientInfoClient;
 import com.mediscreen.patientassessment.model.Assessment;
 import com.mediscreen.patientassessment.model.History;
@@ -18,7 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,19 +30,17 @@ class AssessServiceTest {
   private final String givenName = "givenNameTest";
   private final String familyName = "familyNameTest";
   private final int patientId = 2;
-  private String message;
-
   private final PatientInfo twentyYearOldMale = new PatientInfo();
   private final PatientInfo twentyYearOldFemale = new PatientInfo();
   private final PatientInfo fiftyYearOldMale = new PatientInfo();
   private final Note noKeywordNote = new Note();
   private final Note twoKeywordNote = new Note();
   private final Note threeKeywordNote = new Note();
+  @InjectMocks AssessServiceImpl assessService;
+  private String message;
   private History patientHistory;
-
   @Mock private PatientHistoryRepository patientHistoryRepoMock;
   @Mock private PatientInfoClient patientInfoClientMock;
-  @InjectMocks AssessServiceImpl assessService;
 
   @BeforeEach
   void setUp() {
@@ -93,7 +94,7 @@ class AssessServiceTest {
 
   // Risk = None : NO keywords.
   @Test
-  void getAssessWithId_ShouldReturnNone() {
+  void getAssessWithId_Both_ShouldReturnNone() {
 
     // GIVEN
     patientHistory.setNotes(List.of(noKeywordNote));
@@ -114,7 +115,7 @@ class AssessServiceTest {
   }
   // Risk = Borderline : 2 keywords + age > 30.
   @Test
-  void getAssessWithId_ShouldReturnBorderline() {
+  void getAssessWithId_Both_ShouldReturnBorderline() {
 
     // GIVEN
     patientHistory.setNotes(List.of(twoKeywordNote));
@@ -258,5 +259,157 @@ class AssessServiceTest {
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
+  }
+
+  @Test
+  void getAssessWithId_Male_With1KeyWord_ShouldReturnBorderline() {
+
+    // GIVEN
+    String oneKeyword =
+        "Duis aute irure dolor Fumeur in reprehenderit in "
+            + "voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
+    Note note = new Note();
+    note.setText(oneKeyword);
+    patientHistory.setNotes(List.of(note));
+
+    Assessment expected = new Assessment();
+    expected.setAge(20);
+    expected.setFamilyName(familyName);
+    expected.setGivenName(givenName);
+    message = AssessMessages.BORDERLINE;
+    expected.setMessage(message);
+    // WHEN
+    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.of(patientHistory));
+    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldMale);
+    // THEN
+    Assessment actual = assessService.getAssessWithId(patientId);
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void getAssessWithId_Female_With1KeyWord_ShouldReturnBorderline() {
+
+    // GIVEN
+    String oneKeyword =
+        "Duis aute irure dolor Fumeur in reprehenderit in "
+            + "voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
+    Note note = new Note();
+    note.setText(oneKeyword);
+    patientHistory.setNotes(List.of(note));
+
+    Assessment expected = new Assessment();
+    expected.setAge(20);
+    expected.setFamilyName(familyName);
+    expected.setGivenName(givenName);
+    message = AssessMessages.BORDERLINE;
+    expected.setMessage(message);
+    // WHEN
+    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.of(patientHistory));
+    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    // THEN
+    Assessment actual = assessService.getAssessWithId(patientId);
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void getAssessWithId_Male_ShouldReturnNone() {
+
+    // GIVEN
+    patientHistory.setNotes(List.of(noKeywordNote));
+
+    Assessment expected = new Assessment();
+    expected.setAge(20);
+    expected.setFamilyName(familyName);
+    expected.setGivenName(givenName);
+    message = AssessMessages.NONE;
+    expected.setMessage(message);
+    // WHEN
+    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.of(patientHistory));
+    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldMale);
+    // THEN
+    var actual = assessService.getAssessWithId(patientId);
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void getAssessWithId_Female_ShouldReturnNone() {
+
+    // GIVEN
+    patientHistory.setNotes(List.of(noKeywordNote));
+
+    Assessment expected = new Assessment();
+    expected.setAge(20);
+    expected.setFamilyName(familyName);
+    expected.setGivenName(givenName);
+    message = AssessMessages.NONE;
+    expected.setMessage(message);
+    // WHEN
+    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
+        .thenReturn(Optional.of(patientHistory));
+    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    // THEN
+    var actual = assessService.getAssessWithId(patientId);
+    assertEquals(expected, actual);
+  }
+  /* *******************************************************************************************************************
+   * Test Exception
+   ******************************************************************************************************************* */
+
+  @Test
+  void getAssessWithName_WhenInfoDoesntExist_ShouldThrowDataNotFoundException() {
+
+    // GIVEN
+
+    // WHEN
+
+    when(patientInfoClientMock.getPatientByFamilyNameAndGivenName(anyString(), anyString()))
+        .thenReturn(null);
+    // THEN
+    assertThrows(
+        DataNotFoundException.class,
+        () -> assessService.getAssessWithFamilyNameAndGivenName(familyName, givenName));
+  }
+
+  @Test
+  void getAssessWithName_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
+
+    // GIVEN
+
+    // WHEN
+    when(patientInfoClientMock.getPatientByFamilyNameAndGivenName(anyString(), anyString()))
+        .thenReturn(twentyYearOldFemale);
+    when(patientHistoryRepoMock.findHistoryByFamilyNameAndGivenName(anyString(), anyString()))
+        .thenReturn(Optional.empty());
+    // THEN
+    assertThrows(
+        DataNotFoundException.class,
+        () -> assessService.getAssessWithFamilyNameAndGivenName(familyName, givenName));
+  }
+
+  @Test
+  void getAssessWithId_WhenInfoDoesntExist_ShouldThrowDataNotFoundException() {
+
+    // GIVEN
+
+    // WHEN
+
+    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(null);
+    // THEN
+    assertThrows(DataNotFoundException.class, () -> assessService.getAssessWithId(patientId));
+  }
+
+  @Test
+  void getAssessWithId_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
+
+    // GIVEN
+
+    // WHEN
+    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt())).thenReturn(Optional.empty());
+    // THEN
+    assertThrows(DataNotFoundException.class, () -> assessService.getAssessWithId(patientId));
   }
 }

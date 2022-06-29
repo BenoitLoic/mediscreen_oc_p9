@@ -14,5 +14,5 @@ public interface PatientInfoClient {
 
   @RequestMapping(method = RequestMethod.GET, value = "/patient/get")
   PatientInfo getPatientByFamilyNameAndGivenName(
-      @RequestParam String familyName, @RequestParam String givenName);
+      @RequestParam String family, @RequestParam String given);
 }

@@ -30,11 +30,10 @@ public class AssessControllerImpl implements AssessController {
   @PostMapping("/id")
   @ResponseStatus(HttpStatus.OK)
   public Assessment getAssessWithId(@RequestParam int patientId) {
-    if (patientId<=0){
+    if (patientId <= 0) {
       logger.warn("Error, patientId must be > 0.");
       throw new BadArgumentException("KO, id is not valid.");
     }
-    System.out.println(patientId);
     logger.trace("Get assess for id=" + patientId);
     return assessService.getAssessWithId(patientId);
   }
@@ -49,8 +48,9 @@ public class AssessControllerImpl implements AssessController {
   @Override
   @PostMapping("/name")
   @ResponseStatus(HttpStatus.OK)
-  public Assessment getAssessWithFamilyNameAndGivenName(@RequestParam String familyName, @RequestParam String givenName) {
-    if (familyName.isBlank()||givenName.isBlank()){
+  public Assessment getAssessWithFamilyNameAndGivenName(
+      @RequestParam String familyName, @RequestParam String givenName) {
+    if (familyName.isBlank() || givenName.isBlank()) {
       logger.warn("Error, patientId must be > 0.");
       throw new BadArgumentException("KO, id is not valid.");
     }
