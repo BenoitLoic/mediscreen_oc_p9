@@ -1,6 +1,7 @@
 package com.mediscreen.patientassessment.service;
 
 import com.mediscreen.patientassessment.constant.AssessMessages;
+import com.mediscreen.patientassessment.constant.TriggerKeywords;
 import com.mediscreen.patientassessment.exception.DataNotFoundException;
 import com.mediscreen.patientassessment.feign.PatientInfoClient;
 import com.mediscreen.patientassessment.model.Assessment;
@@ -181,6 +182,7 @@ class AssessServiceTest {
   void getAssessWithId_Both_ShouldReturnInDanger() {
 
     // GIVEN
+    TriggerKeywords.KEYWORDS.forEach(System.out::println);
     patientHistory.setNotes(List.of(threeKeywordNote, threeKeywordNote));
 
     Assessment expected = new Assessment();
@@ -307,6 +309,31 @@ class AssessServiceTest {
     // WHEN
     when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
         .thenReturn(Optional.of(patientHistory));
+    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    // THEN
+    Assessment actual = assessService.getAssessWithId(patientId);
+    assertEquals(expected, actual);
+  }
+  @Test
+  void getAssessWithId_Female_With5KeyWord_ShouldReturnInDanger() {
+
+    // GIVEN
+    String oneKeyword =
+            "Duis aute irure abnormal cholesterol dolor Smoker in reprehenderit in "
+                    + "voluptate velit esse cillum dolore Weight eu Height fugiat nulla pariatur.";
+    Note note = new Note();
+    note.setText(oneKeyword);
+    patientHistory.setNotes(List.of(note));
+
+    Assessment expected = new Assessment();
+    expected.setAge(20);
+    expected.setFamilyName(familyName);
+    expected.setGivenName(givenName);
+    message = AssessMessages.IN_DANGER;
+    expected.setMessage(message);
+    // WHEN
+    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
+            .thenReturn(Optional.of(patientHistory));
     when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);

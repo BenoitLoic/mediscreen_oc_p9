@@ -178,7 +178,7 @@ public class AssessServiceImpl implements AssessService {
   private int getKeywordCount(History history) {
     AtomicInteger keywordCount = new AtomicInteger();
     for (Note note : history.getNotes()) {
-      TriggerKeywords.keywords.forEach(
+      TriggerKeywords.KEYWORDS.forEach(
           word -> {
             if (StringUtils.countOccurrencesOf(note.getText().toLowerCase(), word) > 0) {
               keywordCount.getAndIncrement();

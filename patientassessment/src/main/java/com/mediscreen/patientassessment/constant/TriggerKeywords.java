@@ -1,7 +1,7 @@
 package com.mediscreen.patientassessment.constant;
 
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class TriggerKeywords {
   public static final String HEMOGLOBINE_A1C = "hémoglobine a1c";
@@ -15,7 +15,7 @@ public class TriggerKeywords {
   public static final String RECHUTE = "rechute";
   public static final String REACTION = "réaction";
   public static final String ANTICORPS = "anticorps";
-  public static final List<String> keywords =
+  public static final List<String> KEYWORDS_FR =
       List.of(
           HEMOGLOBINE_A1C,
           MICROALBUMINE,
@@ -28,17 +28,6 @@ public class TriggerKeywords {
           RECHUTE,
           REACTION,
           ANTICORPS);
-  public static final List<Pattern> keywordPatternMatcher =
-      List.of(
-          Pattern.compile(HEMOGLOBINE_A1C),
-          Pattern.compile(MICROALBUMINE),
-          Pattern.compile(TAILLE),
-          Pattern.compile(POIDS),
-          Pattern.compile(FUMEUR),
-          Pattern.compile(ANORMAL),
-          Pattern.compile(CHOLESTEROL),
-          Pattern.compile(VERTIGE),
-          Pattern.compile(RECHUTE),
-          Pattern.compile(REACTION),
-          Pattern.compile(ANTICORPS));
+  public static final List<String> KEYWORDS =
+      Stream.concat(KEYWORDS_FR.stream(), TriggerKeywordsEng.KEYWORDS_ENG.stream()).toList();
 }

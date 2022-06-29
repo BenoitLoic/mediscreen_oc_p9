@@ -76,6 +76,20 @@ services:
     volumes:
       - .m2:/root/.m2
 
+  patient_assessment:
+    depends_on:
+      mongo:
+        condition: service_healthy
+      patient_info:
+        condition: service_started
+    build: ./patientassessment
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    volumes:
+      - .m2:/root/.m2
+
+
   front:
     container_name: angular_med
     build: ./front/mediscreenFront
