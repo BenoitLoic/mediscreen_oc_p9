@@ -34,7 +34,7 @@ public class PatientControllerImpl implements PatientController {
    */
   @GetMapping(value = "/get")
   @ResponseStatus(HttpStatus.OK)
-  public Patient getPatient(
+  public Patient getPatientByFamilyNameAndLastName(
       @RequestParam(name = "family") String familyName,
       @RequestParam(name = "given") String givenName) {
     if (familyName.isBlank() || givenName.isBlank()) {
@@ -48,7 +48,7 @@ public class PatientControllerImpl implements PatientController {
     }
     logger.trace("Get patient: " + familyName + " - " + givenName);
 
-    return patientService.getPatient(familyName, givenName);
+    return patientService.getPatientByFamilyNameAndGivenName(familyName, givenName);
   }
 
   /**
@@ -96,5 +96,24 @@ public class PatientControllerImpl implements PatientController {
     logger.trace(
         "Creating patient: " + patient.getFamilyName() + " - " + patient.getGivenName() + ".");
     return patientService.createPatient(patient);
+  }
+
+  /**
+   * Get the patient with the given id.
+   *
+   * @param id the patient id
+   * @return the patient information
+   */
+  @Override
+  @GetMapping(value = "/id/get")
+  @ResponseStatus(HttpStatus.OK)
+  public Patient getPatientById(@RequestParam int id) {
+    if (id < 1) {
+      logger.warn("Error, invalid parameters for id: " + id);
+      throw new BadArgumentException("KO, invalid argument.");
+    }
+    logger.trace("Get patient: id=" + id);
+
+    return patientService.getPatientById(id);
   }
 }

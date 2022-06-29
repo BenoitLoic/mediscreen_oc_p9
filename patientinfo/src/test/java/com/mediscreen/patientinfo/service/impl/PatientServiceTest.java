@@ -25,7 +25,7 @@ class PatientServiceTest {
   @InjectMocks PatientServiceImpl patientService;
 
   @Test
-  void getPatient() {
+  void getPatientByFamilyNameAndGivenName() {
 
     // GIVEN
     String familyName = "Baggins";
@@ -37,12 +37,12 @@ class PatientServiceTest {
     when(patientRepositoryMock.findByFamilyNameAndGivenName(anyString(), anyString()))
         .thenReturn(Optional.of(patient));
     // THEN
-    Patient result = patientService.getPatient(familyName, givenName);
+    Patient result = patientService.getPatientByFamilyNameAndGivenName(familyName, givenName);
     assertEquals(result.getFamilyName(), familyName);
   }
 
   @Test
-  void getPatient_ShouldThrowDataNotFoundException() {
+  void getPatientByFamilyNameAndGivenName_ShouldThrowDataNotFoundException() {
 
     // GIVEN
     String familyName = "Baggins";
@@ -52,7 +52,7 @@ class PatientServiceTest {
         .thenReturn(Optional.empty());
     // THEN
     assertThrows(
-        DataNotFoundException.class, () -> patientService.getPatient(familyName, givenName));
+        DataNotFoundException.class, () -> patientService.getPatientByFamilyNameAndGivenName(familyName, givenName));
   }
 
   @Test
@@ -172,5 +172,35 @@ class PatientServiceTest {
         .thenReturn(Optional.of(patientFromRepo));
     // THEN}
     assertThrows(DataAlreadyExistException.class, () -> patientService.createPatient(patient));
+  }
+  @Test
+  void getPatientById() {
+
+    // GIVEN
+    int id = 2;
+    String familyName = "Baggins";
+    String givenName = "Frodo";
+    Patient patient = new Patient();
+    patient.setFamilyName(familyName);
+    patient.setGivenName(givenName);
+    // WHEN
+    when(patientRepositoryMock.findById(anyInt()))
+            .thenReturn(Optional.of(patient));
+    // THEN
+    Patient result = patientService.getPatientById(id);
+    assertEquals(result.getFamilyName(), familyName);
+  }
+
+  @Test
+  void getPatientById_ShouldThrowDataNotFoundException() {
+
+    // GIVEN
+    int id = 2;
+    // WHEN
+    when(patientRepositoryMock.findById(anyInt()))
+            .thenReturn(Optional.empty());
+    // THEN
+    assertThrows(
+            DataNotFoundException.class, () -> patientService.getPatientById(id));
   }
 }

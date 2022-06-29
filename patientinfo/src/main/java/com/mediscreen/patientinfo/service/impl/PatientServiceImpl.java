@@ -70,7 +70,7 @@ public class PatientServiceImpl implements PatientService {
    * @return the patient information
    */
   @Override
-  public Patient getPatient(String familyName, String givenName) {
+  public Patient getPatientByFamilyNameAndGivenName(String familyName, String givenName) {
     Optional<Patient> patient =
         patientRepository.findByFamilyNameAndGivenName(familyName, givenName);
     if (patient.isEmpty()) {
@@ -143,7 +143,8 @@ public class PatientServiceImpl implements PatientService {
     logger.trace("Save patient: " + patient.getFamilyName() + " - " + patient.getGivenName());
     // save
     patientRepository.save(patient);
-    patient = this.getPatient(patient.getFamilyName(), patient.getGivenName());
+    patient =
+        this.getPatientByFamilyNameAndGivenName(patient.getFamilyName(), patient.getGivenName());
     logger.trace(
         "Saved Patient: "
             + patient.getFamilyName()
@@ -152,5 +153,21 @@ public class PatientServiceImpl implements PatientService {
             + " with id: "
             + patient.getId());
     return patient;
+  }
+
+  /**
+   * Retrieve the Patient information from repository based on its ID.
+   *
+   * @param id the patient id
+   * @return the patient information
+   */
+  @Override
+  public Patient getPatientById(int id) {
+    Optional<Patient> patient = patientRepository.findById(id);
+    if (patient.isEmpty()) {
+      logger.warn("Error, patient with id=" + id + " doesn't exist.");
+      throw new DataNotFoundException("KO, patient doesn't exist.");
+    }
+    return patient.get();
   }
 }

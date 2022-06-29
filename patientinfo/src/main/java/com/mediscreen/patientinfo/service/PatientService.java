@@ -18,7 +18,7 @@ public interface PatientService {
    * @param givenName the patient firstname
    * @return the patient information
    */
-  Patient getPatient(String familyName, String givenName);
+  Patient getPatientByFamilyNameAndGivenName(String familyName, String givenName);
 
   /**
    * Update the given patient.
@@ -35,4 +35,12 @@ public interface PatientService {
    * @return the patient saved in db
    */
   Patient createPatient(CreatePatientDto createPatientDto);
+
+  /**
+   * Retrieve the Patient information from repository based on its ID.
+   *
+   * @param id the patient id
+   * @return the patient information
+   */
+  Patient getPatientById(int id);
 }

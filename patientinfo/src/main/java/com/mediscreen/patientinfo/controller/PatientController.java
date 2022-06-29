@@ -14,7 +14,15 @@ public interface PatientController {
    * @param givenName the patient given name
    * @return the patient information
    */
-  Patient getPatient(String familyName, String givenName);
+  Patient getPatientByFamilyNameAndLastName(String familyName, String givenName);
+
+  /**
+   * Get the patient with the given id.
+   *
+   * @param id the patient id
+   * @return the patient information
+   */
+  Patient getPatientById(int id);
 
   /**
    * Update the given patient if exist. Can throw DataNotFound if it doesn't exist,

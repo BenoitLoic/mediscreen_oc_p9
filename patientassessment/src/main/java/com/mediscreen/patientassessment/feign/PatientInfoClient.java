@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface PatientInfoClient {
 
   @RequestMapping(method = RequestMethod.GET, value = "/patient/id/get")
-  PatientInfo getPatientByID(@RequestParam int patientId);
+  PatientInfo getPatientByID(@RequestParam(value = "id") int patientId);
 
   @RequestMapping(method = RequestMethod.GET, value = "/patient/get")
   PatientInfo getPatientByFamilyNameAndGivenName(

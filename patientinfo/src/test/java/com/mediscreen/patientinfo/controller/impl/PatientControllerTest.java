@@ -7,18 +7,18 @@ import com.mediscreen.patientinfo.model.Patient;
 import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
 import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
 import com.mediscreen.patientinfo.service.PatientService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +36,7 @@ class PatientControllerTest {
     String familyName = "testName";
     String givenName = "givenNameTest";
     // WHEN
-    Mockito.when(patientServiceMock.getPatient(Mockito.anyString(), Mockito.anyString()))
+    when(patientServiceMock.getPatientByFamilyNameAndGivenName(anyString(), anyString()))
         .thenReturn(new Patient());
     // THEN
     mockMvc
@@ -52,7 +52,7 @@ class PatientControllerTest {
     String familyName = "testName";
     String givenName = "";
     // WHEN
-    Mockito.when(patientServiceMock.getPatient(Mockito.anyString(), Mockito.anyString()))
+    when(patientServiceMock.getPatientByFamilyNameAndGivenName(anyString(), anyString()))
         .thenReturn(new Patient());
     // THEN
     mockMvc
@@ -71,9 +71,9 @@ class PatientControllerTest {
     String familyName = "testName";
     String givenName = "givenNameTest";
     // WHEN
-    Mockito.doThrow(DataNotFoundException.class)
+    doThrow(DataNotFoundException.class)
         .when(patientServiceMock)
-        .getPatient(Mockito.anyString(), Mockito.anyString());
+        .getPatientByFamilyNameAndGivenName(anyString(), anyString());
     // THEN
     mockMvc
         .perform(get("/patient/get").param("family", familyName).param("given", givenName))
@@ -101,8 +101,7 @@ class PatientControllerTest {
     String json = objectMapper.writeValueAsString(patient);
 
     // WHEN
-    Mockito.when(patientServiceMock.updatePatient(Mockito.any(UpdatePatientDto.class)))
-        .thenReturn(new Patient());
+    when(patientServiceMock.updatePatient(any(UpdatePatientDto.class))).thenReturn(new Patient());
     // THEN
     mockMvc
         .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
@@ -153,9 +152,9 @@ class PatientControllerTest {
 
     String json = objectMapper.writeValueAsString(patient);
     // WHEN
-    Mockito.doThrow(DataNotFoundException.class)
+    doThrow(DataNotFoundException.class)
         .when(patientServiceMock)
-        .updatePatient(Mockito.any(UpdatePatientDto.class));
+        .updatePatient(any(UpdatePatientDto.class));
     // THEN
     mockMvc
         .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
@@ -183,7 +182,7 @@ class PatientControllerTest {
     String json = objectMapper.writeValueAsString(patient);
 
     // WHEN
-    Mockito.when(patientServiceMock.createPatient(Mockito.any())).thenReturn(new Patient());
+    when(patientServiceMock.createPatient(any())).thenReturn(new Patient());
     // THEN
     mockMvc
         .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
@@ -234,9 +233,7 @@ class PatientControllerTest {
     String json = objectMapper.writeValueAsString(patient);
 
     // WHEN
-    Mockito.doThrow(DataAlreadyExistException.class)
-        .when(patientServiceMock)
-        .createPatient(Mockito.any());
+    doThrow(DataAlreadyExistException.class).when(patientServiceMock).createPatient(any());
     // THEN
     mockMvc
         .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
@@ -245,5 +242,55 @@ class PatientControllerTest {
             result ->
                 Assertions.assertTrue(
                     result.getResolvedException() instanceof DataAlreadyExistException));
+  }
+
+  @Test
+  void getPatientByIdValid() throws Exception {
+
+    // GIVEN
+    int patientId = 2;
+    // WHEN
+    when(patientServiceMock.getPatientById(anyInt())).thenReturn(new Patient());
+    // THEN
+    mockMvc
+        .perform(get("/patient/id/get").param("id", String.valueOf(patientId)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  void getPatientByIdInvalid_ShouldThrowBadArgumentException() throws Exception {
+
+    // GIVEN
+    int patientId = 0;
+
+    // WHEN
+    when(patientServiceMock.getPatientById(anyInt())).thenReturn(new Patient());
+    // THEN
+    mockMvc
+        .perform(get("/patient/id/get").param("id", String.valueOf(patientId)))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof BadArgumentException));
+  }
+
+  @Test
+  void getPatientById_ShouldThrowDataNotFoundException() throws Exception {
+
+    // GIVEN
+    int patientId = 2;
+
+    // WHEN
+    doThrow(DataNotFoundException.class).when(patientServiceMock).getPatientById(anyInt());
+    // THEN
+    mockMvc
+        .perform(get("/patient/id/get").param("id", String.valueOf(patientId)))
+        .andExpect(status().isNotFound())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof DataNotFoundException));
   }
 }
