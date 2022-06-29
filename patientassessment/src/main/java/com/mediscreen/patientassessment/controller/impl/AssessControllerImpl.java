@@ -2,13 +2,12 @@ package com.mediscreen.patientassessment.controller.impl;
 
 import com.mediscreen.patientassessment.controller.AssessController;
 import com.mediscreen.patientassessment.exception.BadArgumentException;
-import com.mediscreen.patientassessment.model.Assessement;
+import com.mediscreen.patientassessment.model.Assessment;
 import com.mediscreen.patientassessment.service.AssessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 /** Implementation for AssessController. */
@@ -30,7 +29,7 @@ public class AssessControllerImpl implements AssessController {
   @Override
   @PostMapping("/id")
   @ResponseStatus(HttpStatus.OK)
-  public Assessement getAssessWithId(@RequestParam int patientId) {
+  public Assessment getAssessWithId(@RequestParam int patientId) {
     if (patientId<=0){
       logger.warn("Error, patientId must be > 0.");
       throw new BadArgumentException("KO, id is not valid.");
@@ -50,7 +49,7 @@ public class AssessControllerImpl implements AssessController {
   @Override
   @PostMapping("/name")
   @ResponseStatus(HttpStatus.OK)
-  public Assessement getAssessWithFamilyNameAndGivenName(@RequestParam String familyName, @RequestParam String givenName) {
+  public Assessment getAssessWithFamilyNameAndGivenName(@RequestParam String familyName, @RequestParam String givenName) {
     if (familyName.isBlank()||givenName.isBlank()){
       logger.warn("Error, patientId must be > 0.");
       throw new BadArgumentException("KO, id is not valid.");

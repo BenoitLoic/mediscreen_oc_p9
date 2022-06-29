@@ -2,7 +2,7 @@ package com.mediscreen.patientassessment.model;
 
 import java.util.Objects;
 
-public class Assessement {
+public class Assessment {
 
     private String familyName;
     private String givenName;
@@ -49,7 +49,7 @@ public class Assessement {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Assessement that = (Assessement) o;
+        Assessment that = (Assessment) o;
         return age == that.age && Objects.equals(familyName, that.familyName) && Objects.equals(givenName, that.givenName) && Objects.equals(message, that.message);
     }
 

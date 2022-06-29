@@ -1,6 +1,6 @@
 package com.mediscreen.patientassessment.service;
 
-import com.mediscreen.patientassessment.model.Assessement;
+import com.mediscreen.patientassessment.model.Assessment;
 
 public interface AssessService {
     /**
@@ -9,7 +9,7 @@ public interface AssessService {
      * @param patientId the patient ID
      * @return the assessement
      */
-    Assessement getAssessWithId(int patientId);
+    Assessment getAssessWithId(int patientId);
 
     /**
      * Get the patient assess defined by its family-name and given-name.
@@ -18,5 +18,5 @@ public interface AssessService {
      * @param givenName the patient given-name
      * @return the assessment
      */
-    Assessement getAssessWithFamilyNameAndGivenName(String familyName, String givenName);
+    Assessment getAssessWithFamilyNameAndGivenName(String familyName, String givenName);
 }

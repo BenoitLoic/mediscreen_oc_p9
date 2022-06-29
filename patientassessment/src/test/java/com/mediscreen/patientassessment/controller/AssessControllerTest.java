@@ -3,10 +3,9 @@ package com.mediscreen.patientassessment.controller;
 import com.mediscreen.patientassessment.controller.impl.AssessControllerImpl;
 import com.mediscreen.patientassessment.exception.BadArgumentException;
 import com.mediscreen.patientassessment.exception.DataNotFoundException;
-import com.mediscreen.patientassessment.model.Assessement;
+import com.mediscreen.patientassessment.model.Assessment;
 import com.mediscreen.patientassessment.service.AssessService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,7 +34,7 @@ class AssessControllerTest {
     // GIVEN
 
     // WHEN
-    when(assessService.getAssessWithId(anyInt())).thenReturn(new Assessement());
+    when(assessService.getAssessWithId(anyInt())).thenReturn(new Assessment());
     // THEN
     mockMvc
         .perform(post("/assess/id").param("patientId", String.valueOf(patientId)))
@@ -80,7 +79,7 @@ class AssessControllerTest {
 
     // WHEN
     when(assessService.getAssessWithFamilyNameAndGivenName(anyString(), anyString()))
-        .thenReturn(new Assessement());
+        .thenReturn(new Assessment());
     // THEN
     mockMvc
         .perform(post("/assess/name").param("familyName", familyName).param("givenName", givenName))

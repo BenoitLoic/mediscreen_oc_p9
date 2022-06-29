@@ -1,7 +1,6 @@
 package com.mediscreen.patientassessment.controller;
 
-import com.mediscreen.patientassessment.model.Assessement;
-import org.springframework.validation.BindingResult;
+import com.mediscreen.patientassessment.model.Assessment;
 
 /**
  * Rest Controller for Assess feature.
@@ -13,7 +12,7 @@ public interface AssessController {
    * @param patientId the patient ID
    * @return the assessment
    */
-  Assessement getAssessWithId(int patientId);
+  Assessment getAssessWithId(int patientId);
 
   /**
    * Get assess for the given patient defined by its familyName and givenName.
@@ -22,5 +21,5 @@ public interface AssessController {
    * @param givenName the patient's givenName
    * @return the assessment
    */
-  Assessement getAssessWithFamilyNameAndGivenName(String familyName,String givenName);
+  Assessment getAssessWithFamilyNameAndGivenName(String familyName, String givenName);
 }
