@@ -64,8 +64,22 @@
           </div>
         </div>
       </div>
-      <div class="btn-group btn-group-md"><!-- AJOUTER create Note ici -->
-        <a class="btn btn-outline-success" (click)="onOpenModal('addNote')"><i class="bi bi-plus-square"> Note</i></a>
+      <div class="card m-b-30" style="{{assessmentColor}}" *ngIf="assessment!=null">
+        <div class="card-body row" id="assessCard">
+          <div class="card-title align-self-center mb-0">
+            <p>Age: {{assessment.age}}</p>
+            <p>Diabetes assessment is: {{assessment.message}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-around">
+        <div class="btn-group btn-group-md"><!-- GET Assess -->
+          <a class="btn btn-outline-warning" (click)="getAssess(getPatient.id)"><i class="bi bi-play-circle-fill"> Get
+            Assess</i></a>
+        </div>
+        <div class="btn-group btn-group-md"><!-- AJOUTER create Note ici -->
+          <a class="btn btn-outline-success" (click)="onOpenModal('addNote')"><i class="bi bi-plus-square"> Note</i></a>
+        </div>
       </div>
     </div>
 
@@ -84,31 +98,6 @@
   </div>
 </div>
 <div class="container">
-  <!--  <div class="row">-->
-  <!--    <div *ngFor="let patient of patients" class="col-md-6 col-xl-3">-->
-  <!--      <div class="card m-b-30">-->
-  <!--        <div class="card-body row">-->
-  <!--          <div class="card-title align-self-center mb-0">-->
-  <!--            <h6>{{patient?.familyName}}</h6>-->
-  <!--            <p>{{patient?.givenName}}</p>-->
-  <!--            <p class="m-0">Sex: {{patient?.sex}}</p>-->
-  <!--            <p class="m-0">Birthdate: {{patient?.birthDate}}</p>-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--        <ul class="list-group list-group-flush">-->
-  <!--          <li class="list-group-item"><i class="fa fa-envelope float-right"></i> : {{patient?.address}}</li>-->
-  <!--          <li class="list-group-item"><i class="fa fa-phone float-right"></i> : {{patient?.phone}}</li>-->
-  <!--        </ul>-->
-  <!--        <div class="card-body">-->
-  <!--          <div class="float-right btn-group btn-group-sm">-->
-  <!--            <a (click)="onOpenModal('edit',patient)" class="btn btn-primary tooltips" data-placement="top"-->
-  <!--               data-toggle="tooltip" data-original-title="Edit"><i class="fa fa-pencil"></i> </a>-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
   <!-- Add Patient Modal -->
   <div class="modal fade" id="addPatientModal" tabindex="-1" role="dialog" aria-labelledby="addPatientModalLabel"
        aria-hidden="true">
@@ -124,17 +113,20 @@
           <form #addForm="ngForm" (ngSubmit)="onAddPatient(addForm)">
             <div class="form-group">
               <label for="familyNameAddForm">Family-name</label>
-              <input type="text" ngModel name="familyName" class="form-control" id="familyNameAddForm" placeholder="lastname"
+              <input type="text" ngModel name="familyName" class="form-control" id="familyNameAddForm"
+                     placeholder="lastname"
                      required>
             </div>
             <div class="form-group">
               <label for="givenNameAddForm">Given-name</label>
-              <input type="text" ngModel name="givenName" class="form-control" id="givenNameAddForm" placeholder="firstname"
+              <input type="text" ngModel name="givenName" class="form-control" id="givenNameAddForm"
+                     placeholder="firstname"
                      required>
             </div>
             <div class="form-group">
               <label for="birthdateAddForm">Birthdate</label>
-              <input type="date" ngModel name="birthDate" class="form-control" id="birthdateAddForm" placeholder="yyyy-MM-dd"
+              <input type="date" ngModel name="birthDate" class="form-control" id="birthdateAddForm"
+                     placeholder="yyyy-MM-dd"
                      required>
             </div>
             <div class="form-group">
@@ -198,7 +190,8 @@
             </div>
             <div class="form-group">
               <label for="addressEditForm">Address</label>
-              <input type="text" ngModel="{{editPatient?.address}}" name="address" class="form-control" id="addressEditForm"
+              <input type="text" ngModel="{{editPatient?.address}}" name="address" class="form-control"
+                     id="addressEditForm"
                      placeholder="Address">
             </div>
             <div class="form-group">
@@ -250,7 +243,8 @@
             </div>
             <div class="form-group" hidden>
               <label for="patientIdHAddForm">PatientId</label>
-              <input type="text" ngModel="{{getPatient?.id}}" name="patientId" class="form-control" id="patientIdHAddForm"
+              <input type="text" ngModel="{{getPatient?.id}}" name="patientId" class="form-control"
+                     id="patientIdHAddForm"
                      placeholder="id" required>
             </div>
             <div class="form-group">
@@ -291,7 +285,7 @@
             <div class="form-group">
               <label for="noteNoteAddForm">Note</label>
               <textarea type="text" ngModel name="textNote" class="form-control" id="noteNoteAddForm"
-                     placeholder="Write your note here."
+                        placeholder="Write your note here."
                         required></textarea>
             </div>
 
@@ -345,5 +339,4 @@
   </div>
 
 </div>
-<!-- ESSAI -->
 </body>

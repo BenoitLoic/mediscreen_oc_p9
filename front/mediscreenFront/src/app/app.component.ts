@@ -5,6 +5,8 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {NgForm} from "@angular/forms";
 import {HistoryService} from "./history.service";
 import {History, Note} from "./History";
+import {AssessService} from "./assess.service";
+import {Assessment} from "./Assessment";
 
 @Component({
   selector: 'app-root',
@@ -18,8 +20,10 @@ export class AppComponent implements OnInit {
   public getHistory: History | undefined;
   public getNotes: Note[] = [];
   public actualNote: Note | undefined;
+  public assessment: Assessment | undefined;
+  public assessmentColor: string |undefined;
 
-  constructor(private patientService: PatientService, private historyService: HistoryService) {
+  constructor(private patientService: PatientService, private historyService: HistoryService, private assessService: AssessService) {
   }
 
   ngOnInit() {
@@ -29,6 +33,10 @@ export class AppComponent implements OnInit {
 
     this.patientService.getPatient(familyName, givenName).subscribe({
       next: (response: Patient) => {
+        this.getPatient=undefined;
+        this.assessment = undefined;
+        this.getHistory = undefined;
+        this.getNotes = [];
         this.getPatient = response;
         this.getHistoryByName(familyName, givenName);
       },
@@ -174,5 +182,30 @@ export class AppComponent implements OnInit {
         alert(error.message);
       }
     })
+  }
+
+  public getAssess(id: number) {
+    this.assessService.getAssessmentWithId(id).subscribe({
+      next: (response: Assessment) => {
+        console.log(response);
+        this.assessment = response;
+        this.colorizeAssessment(response.message);
+      },
+      error: (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    })
+  }
+
+  public colorizeAssessment(message: string) {
+    if (message === "Borderline") {
+      this.assessmentColor = "background-color: rgb(250,199,41)";
+    }
+    if (message === "In Danger") {
+      this.assessmentColor = "background-color: rgba(255,0,0,0.66)";
+    }
+    if (message === "Early onset") {
+      this.assessmentColor = "background-color: rgba(137,52,217,0.74)";
+    }
   }
 }

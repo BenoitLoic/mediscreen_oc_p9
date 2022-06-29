@@ -14,10 +14,6 @@ export class PatientService {
   constructor(private http: HttpClient) {
   }
 
-  public getPatients(): Observable<Patient[]> {
-    return this.http.get<Patient[]>(`${this.apiServerUrl}/patient/all`);
-  }
-
   public getPatient(familyName: string, givenName: string): Observable<Patient> {
     return this.http.get<Patient>(`${this.apiServerUrl}/patient/get?family=${familyName}&given=${givenName}`);
   }
