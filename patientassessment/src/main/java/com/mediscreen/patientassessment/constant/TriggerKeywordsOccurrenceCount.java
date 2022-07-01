@@ -1,5 +1,8 @@
 package com.mediscreen.patientassessment.constant;
 
+/**
+ * Contain the keyword occurrence needed to trigger each assessment.
+ */
 public class TriggerKeywordsOccurrenceCount {
   public static final int ANY_SEX_OLDER_THAN_30_BORDERLINE = 2;
   public static final int ANY_SEX_OLDER_THAN_30_IN_DANGER = 6;

@@ -1,5 +1,8 @@
 package com.mediscreen.patientassessment.constant;
 
+/**
+ * Contains the assessment message send to the user.
+ */
 public class AssessMessages {
 
   public static final String NONE = "None";

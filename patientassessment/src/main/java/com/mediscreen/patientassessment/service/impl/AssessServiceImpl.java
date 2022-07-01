@@ -20,6 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+/**
+ * Assess service implementation.
+ * Contains method that calculate and return the assessment.
+ */
 @Service
 public class AssessServiceImpl implements AssessService {
 
@@ -51,7 +55,7 @@ public class AssessServiceImpl implements AssessService {
    */
   @Override
   public Assessment getAssessWithFamilyNameAndGivenName(String familyName, String givenName) {
-    PatientInfo patientInfo = getPatientInfoByFamilyNameAndGivenNAme(familyName, givenName);
+    PatientInfo patientInfo = getPatientInfoByFamilyNameAndGivenName(familyName, givenName);
     History patientHistory = getHistoryByFamilyNameAndGivenName(familyName, givenName);
     return getAssessment(patientInfo, patientHistory);
   }
@@ -93,7 +97,7 @@ public class AssessServiceImpl implements AssessService {
     return patientInfo;
   }
 
-  private PatientInfo getPatientInfoByFamilyNameAndGivenNAme(String familyName, String givenName) {
+  private PatientInfo getPatientInfoByFamilyNameAndGivenName(String familyName, String givenName) {
     PatientInfo patientInfo =
         patientInfoClient.getPatientByFamilyNameAndGivenName(familyName, givenName);
     if (patientInfo == null) {

@@ -3,6 +3,7 @@ package com.mediscreen.patientassessment.constant;
 import java.util.List;
 import java.util.stream.Stream;
 
+/** Contains the keywords that trigger the diabetes assessment. */
 public class TriggerKeywords {
   public static final String HEMOGLOBINE_A1C = "hémoglobine a1c";
   public static final String MICROALBUMINE = "microalbumine";

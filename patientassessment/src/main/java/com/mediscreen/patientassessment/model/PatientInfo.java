@@ -3,6 +3,9 @@ package com.mediscreen.patientassessment.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Model for PatientInfo object.
+ */
 public class PatientInfo {
   private int id;
   private String familyName;

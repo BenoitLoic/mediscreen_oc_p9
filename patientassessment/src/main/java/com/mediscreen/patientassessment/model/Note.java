@@ -3,6 +3,9 @@ package com.mediscreen.patientassessment.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Model for Note object.
+ */
 public class Note {
   private LocalDateTime date;
   private String text;

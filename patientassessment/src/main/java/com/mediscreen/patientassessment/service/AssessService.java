@@ -2,6 +2,10 @@ package com.mediscreen.patientassessment.service;
 
 import com.mediscreen.patientassessment.model.Assessment;
 
+/**
+ * Assess service interface.
+ * Contains method that calculate and return the assessment.
+ */
 public interface AssessService {
   /**
    * Get the patient assess defined by its ID.

@@ -2,6 +2,9 @@ package com.mediscreen.patientassessment.model;
 
 import java.util.Objects;
 
+/**
+ * Assess model.
+ */
 public class Assessment {
 
   private String familyName;
