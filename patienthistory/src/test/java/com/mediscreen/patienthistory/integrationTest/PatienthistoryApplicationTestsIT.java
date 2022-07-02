@@ -88,7 +88,7 @@ class PatienthistoryApplicationTestsIT {
     MvcResult mvcResult =
         mockMvc
             .perform(
-                get("/patHistory/get")
+                get("/patHistory/name/get")
                     .param("familyName", "familyName1")
                     .param("givenName", "givenName1"))
             .andExpect(status().isOk())
@@ -140,6 +140,7 @@ class PatienthistoryApplicationTestsIT {
     assert updatedPatient != null;
 
     assertEquals(updatedPatient.getNotes().size(), 1);
+    //noinspection OptionalGetWithoutIsPresent
     assertEquals(
         updatedPatient.getNotes().stream().findFirst().get().getText(), updateNote.getText());
   }

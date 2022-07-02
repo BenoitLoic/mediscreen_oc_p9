@@ -40,7 +40,7 @@ class PatientHistoryServiceTest {
     when(patientHistoryRepositoryMock.findHistoryByFamilyNameAndGivenName(anyString(), anyString()))
         .thenReturn(Optional.of(history));
     // THEN
-    History actual = patientHistoryService.getPatientHistory(familyName, givenName);
+    History actual = patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName);
     verify(patientHistoryRepositoryMock, times(1))
         .findHistoryByFamilyNameAndGivenName(familyName, givenName);
     assertEquals(givenName, actual.getGivenName());
@@ -56,7 +56,7 @@ class PatientHistoryServiceTest {
     // THEN
     assertThrows(
         DataNotFoundException.class,
-        () -> patientHistoryService.getPatientHistory(familyName, givenName));
+        () -> patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName));
   }
 
   @Test
@@ -203,7 +203,6 @@ class PatientHistoryServiceTest {
     // GIVEN
     AddPatientHistoryDto addHistory =
         new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
-
     addHistory.setTextNote("test text");
 
     // WHEN

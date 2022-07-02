@@ -12,8 +12,10 @@ import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
 import com.mediscreen.patienthistory.service.PatientHistoryService;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,12 +36,29 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
    * @return collection of Note
    */
   @Override
-  public History getPatientHistory(String familyName, String givenName) {
+  public History getPatientHistoryByFamilyNameAndGivenName(String familyName, String givenName) {
     logger.trace("service, get patient history in db.");
     Optional<History> history =
         patientHistoryRepository.findHistoryByFamilyNameAndGivenName(familyName, givenName);
     if (history.isEmpty()) {
       logger.warn("Error, patient: " + familyName + " - " + givenName + " doesn't exist.");
+      throw new DataNotFoundException("KO, patient doesn't exist.");
+    }
+    return history.get();
+  }
+
+  /**
+   * Get history saved for the given patient.
+   *
+   * @param patientId the patient id
+   * @return collection of Note
+   */
+  @Override
+  public History getPatientHistoryById(int patientId) {
+    logger.trace("service, get patient history in db.");
+    Optional<History> history = patientHistoryRepository.findHistoryByPatientId(patientId);
+    if (history.isEmpty()) {
+      logger.warn("Error, patient with id= " + patientId + " doesn't exist.");
       throw new DataNotFoundException("KO, patient doesn't exist.");
     }
     return history.get();
@@ -135,7 +154,7 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
   }
 
   /**
-   * Create a new Note for the given History
+   * Create a new Note for the given History.
    *
    * @param addNoteDto the note to add
    * @return the patient's history
@@ -176,8 +195,8 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
       throw new DataNotFoundException("KO, patient history doesn't exist.");
     }
     History history = savedHistory.get();
-    for (Note note:history.getNotes()){
-      if (note.getDate().equals(updateNoteDto.getDate())){
+    for (Note note : history.getNotes()) {
+      if (note.getDate().equals(updateNoteDto.getDate())) {
         logger.trace("Updating text.");
         note.setText(updateNoteDto.getText());
         break;
@@ -185,6 +204,5 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
     }
 
     return patientHistoryRepository.save(history);
-
   }
 }

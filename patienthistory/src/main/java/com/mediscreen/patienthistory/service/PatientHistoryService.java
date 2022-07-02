@@ -12,14 +12,23 @@ import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
  * <p>contains method used for CRUD on history entity.
  */
 public interface PatientHistoryService {
+
   /**
-   * Get all the notes saved for the given patient.
+   * Get the history saved for the given patient.
    *
    * @param familyName the patient family name
    * @param givenName the patient given name
    * @return collection of Note
    */
-  History getPatientHistory(String familyName, String givenName);
+  History getPatientHistoryByFamilyNameAndGivenName(String familyName, String givenName);
+
+  /**
+   * Get history saved for the given patient.
+   *
+   * @param patientId the patient id
+   * @return collection of Note
+   */
+  History getPatientHistoryById(int patientId);
 
   /**
    * Update an existing patient History.

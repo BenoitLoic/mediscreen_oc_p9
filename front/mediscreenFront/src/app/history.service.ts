@@ -14,7 +14,7 @@ export class HistoryService {
   }
 
   public getHistory(familyName:string,givenName:string):Observable<History>{
-    return this.http.get<History>(`${this.apiServerUrl}/patHistory/get?familyName=${familyName}&givenName=${givenName}`)
+    return this.http.get<History>(`${this.apiServerUrl}/patHistory/name/get?familyName=${familyName}&givenName=${givenName}`)
   }
   public updateHistory(history:History):Observable<History>{
     return this.http.put<History>(`${this.apiServerUrl}/patHistory/update`,history)

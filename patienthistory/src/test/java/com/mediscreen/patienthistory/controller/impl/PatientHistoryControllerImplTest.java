@@ -43,12 +43,12 @@ class PatientHistoryControllerImplTest {
     // GIVEN
 
     // WHEN
-    when(patientHistoryServiceMock.getPatientHistory(anyString(), anyString()))
+    when(patientHistoryServiceMock.getPatientHistoryByFamilyNameAndGivenName(anyString(), anyString()))
         .thenReturn(new History());
     // THEN
     mockMvc
         .perform(
-            get("/patHistory/get").param("givenName", givenName).param("familyName", familyName))
+            get("/patHistory/name/get").param("givenName", givenName).param("familyName", familyName))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
@@ -63,7 +63,7 @@ class PatientHistoryControllerImplTest {
     // THEN
     mockMvc
         .perform(
-            get("/patHistory/get")
+            get("/patHistory/name/get")
                 .param("givenName", givenName)
                 .param("familyName", invalidFamilyName))
         .andExpect(status().isBadRequest())
@@ -80,11 +80,11 @@ class PatientHistoryControllerImplTest {
     // WHEN
     doThrow(DataNotFoundException.class)
         .when(patientHistoryServiceMock)
-        .getPatientHistory(anyString(), anyString());
+        .getPatientHistoryByFamilyNameAndGivenName(anyString(), anyString());
     // THEN
     mockMvc
         .perform(
-            get("/patHistory/get").param("givenName", givenName).param("familyName", familyName))
+            get("/patHistory/name/get").param("givenName", givenName).param("familyName", familyName))
         .andExpect(status().isNotFound())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof DataNotFoundException));

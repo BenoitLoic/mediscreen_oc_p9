@@ -70,6 +70,7 @@ services:
       mongo:
         condition: service_healthy
     build: ./patienthistory
+    container_name: patient-history
     restart: on-failure
     ports:
       - "8082:8082"

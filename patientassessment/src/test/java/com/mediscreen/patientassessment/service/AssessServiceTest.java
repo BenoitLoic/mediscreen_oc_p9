@@ -3,16 +3,15 @@ package com.mediscreen.patientassessment.service;
 import com.mediscreen.patientassessment.constant.AssessMessages;
 import com.mediscreen.patientassessment.constant.TriggerKeywords;
 import com.mediscreen.patientassessment.exception.DataNotFoundException;
+import com.mediscreen.patientassessment.feign.PatientHistoryClient;
 import com.mediscreen.patientassessment.feign.PatientInfoClient;
 import com.mediscreen.patientassessment.model.Assessment;
 import com.mediscreen.patientassessment.model.History;
 import com.mediscreen.patientassessment.model.Note;
 import com.mediscreen.patientassessment.model.PatientInfo;
-import com.mediscreen.patientassessment.repository.PatientHistoryRepository;
 import com.mediscreen.patientassessment.service.impl.AssessServiceImpl;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +39,7 @@ class AssessServiceTest {
   @InjectMocks AssessServiceImpl assessService;
   private String message;
   private History patientHistory;
-  @Mock private PatientHistoryRepository patientHistoryRepoMock;
+  @Mock private PatientHistoryClient patientHistoryClientMock;
   @Mock private PatientInfoClient patientInfoClientMock;
 
   @BeforeEach
@@ -107,9 +106,8 @@ class AssessServiceTest {
     message = AssessMessages.NONE;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(fiftyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(fiftyYearOldMale);
     // THEN
     var actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -128,9 +126,8 @@ class AssessServiceTest {
     message = AssessMessages.BORDERLINE;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(fiftyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(fiftyYearOldMale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -149,9 +146,8 @@ class AssessServiceTest {
     message = AssessMessages.IN_DANGER;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldMale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -170,9 +166,8 @@ class AssessServiceTest {
     message = AssessMessages.IN_DANGER;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldFemale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -192,9 +187,8 @@ class AssessServiceTest {
     message = AssessMessages.IN_DANGER;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(fiftyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(fiftyYearOldMale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -213,9 +207,8 @@ class AssessServiceTest {
     message = AssessMessages.EARLY_ONSET;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldMale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -234,9 +227,8 @@ class AssessServiceTest {
     message = AssessMessages.EARLY_ONSET;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldFemale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -255,9 +247,8 @@ class AssessServiceTest {
     message = AssessMessages.EARLY_ONSET;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(fiftyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn(patientHistory);
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(fiftyYearOldMale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -281,9 +272,8 @@ class AssessServiceTest {
     message = AssessMessages.BORDERLINE;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn((patientHistory));
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldMale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -307,20 +297,20 @@ class AssessServiceTest {
     message = AssessMessages.BORDERLINE;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn((patientHistory));
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldFemale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
   }
+
   @Test
   void getAssessWithId_Female_With5KeyWord_ShouldReturnInDanger() {
 
     // GIVEN
     String oneKeyword =
-            "Duis aute irure abnormal cholesterol dolor Smoker in reprehenderit in "
-                    + "voluptate velit esse cillum dolore Weight eu Height fugiat nulla pariatur.";
+        "Duis aute irure abnormal cholesterol dolor Smoker in reprehenderit in "
+            + "voluptate velit esse cillum dolore Weight eu Height fugiat nulla pariatur.";
     Note note = new Note();
     note.setText(oneKeyword);
     patientHistory.setNotes(List.of(note));
@@ -332,9 +322,8 @@ class AssessServiceTest {
     message = AssessMessages.IN_DANGER;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-            .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn((patientHistory));
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldFemale);
     // THEN
     Assessment actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -353,9 +342,8 @@ class AssessServiceTest {
     message = AssessMessages.NONE;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldMale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn((patientHistory));
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldMale);
     // THEN
     var actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
@@ -374,13 +362,36 @@ class AssessServiceTest {
     message = AssessMessages.NONE;
     expected.setMessage(message);
     // WHEN
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(patientHistory));
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
+    when(patientHistoryClientMock.getPatientHistoryById(anyInt())).thenReturn((patientHistory));
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(twentyYearOldFemale);
     // THEN
     var actual = assessService.getAssessWithId(patientId);
     assertEquals(expected, actual);
   }
+
+  @Test
+  void getAssessWithFamilyNameAndGivenName_Female_ShouldReturnNone() {
+
+    // GIVEN
+    patientHistory.setNotes(List.of(noKeywordNote));
+
+    Assessment expected = new Assessment();
+    expected.setAge(20);
+    expected.setFamilyName(familyName);
+    expected.setGivenName(givenName);
+    message = AssessMessages.NONE;
+    expected.setMessage(message);
+    // WHEN
+    when(patientHistoryClientMock.getPatientHistoryByFamilyNameAndGivenName(
+            anyString(), anyString()))
+        .thenReturn((patientHistory));
+    when(patientInfoClientMock.getPatientByFamilyNameAndGivenName(anyString(), anyString()))
+        .thenReturn(twentyYearOldFemale);
+    // THEN
+    var actual = assessService.getAssessWithFamilyNameAndGivenName(familyName, givenName);
+    assertEquals(expected, actual);
+  }
+
   /* *******************************************************************************************************************
    * Test Exception
    ******************************************************************************************************************* */
@@ -401,41 +412,13 @@ class AssessServiceTest {
   }
 
   @Test
-  void getAssessWithName_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
-
-    // GIVEN
-
-    // WHEN
-    when(patientInfoClientMock.getPatientByFamilyNameAndGivenName(anyString(), anyString()))
-        .thenReturn(twentyYearOldFemale);
-    when(patientHistoryRepoMock.findHistoryByFamilyNameAndGivenName(anyString(), anyString()))
-        .thenReturn(Optional.empty());
-    // THEN
-    assertThrows(
-        DataNotFoundException.class,
-        () -> assessService.getAssessWithFamilyNameAndGivenName(familyName, givenName));
-  }
-
-  @Test
   void getAssessWithId_WhenInfoDoesntExist_ShouldThrowDataNotFoundException() {
 
     // GIVEN
 
     // WHEN
 
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(null);
-    // THEN
-    assertThrows(DataNotFoundException.class, () -> assessService.getAssessWithId(patientId));
-  }
-
-  @Test
-  void getAssessWithId_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
-
-    // GIVEN
-
-    // WHEN
-    when(patientInfoClientMock.getPatientByID(anyInt())).thenReturn(twentyYearOldFemale);
-    when(patientHistoryRepoMock.findHistoryByPatientId(anyInt())).thenReturn(Optional.empty());
+    when(patientInfoClientMock.getPatientById(anyInt())).thenReturn(null);
     // THEN
     assertThrows(DataNotFoundException.class, () -> assessService.getAssessWithId(patientId));
   }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Feign client for Patient Info service. CContain method to get the patient information from
+ * Feign client for Patient Info service. Contain method to get the patient information from
  * patient info service.
  */
 @FeignClient(
@@ -24,7 +24,7 @@ public interface PatientInfoClient {
    * @return the patient information
    */
   @RequestMapping(method = RequestMethod.GET, value = "/patient/id/get")
-  PatientInfo getPatientByID(@RequestParam(value = "id") int patientId);
+  PatientInfo getPatientById(@RequestParam(value = "id") int patientId);
 
   /**
    * Get the patient with the given familyName (lastname) and givenName (firstname).

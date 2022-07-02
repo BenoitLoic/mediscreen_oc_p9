@@ -16,7 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /** Implementation for Patient History Rest Controller. */
 @RestController
@@ -37,9 +45,9 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
    * @return collection with all saved notes
    */
   @Override
-  @GetMapping("/get")
+  @GetMapping("/name/get")
   @ResponseStatus(HttpStatus.OK)
-  public History getPatientHistory(
+  public History getPatientHistoryByFamilyNameAndGivenName(
       @RequestParam String familyName, @RequestParam String givenName) {
 
     if (familyName.isBlank() || givenName.isBlank()) {
@@ -53,7 +61,31 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
     }
     logger.trace("Getting history for patient: " + givenName + " - " + familyName + ".");
 
-    return patientHistoryService.getPatientHistory(familyName, givenName);
+    return patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName);
+  }
+
+  /**
+   * Get all Notes for the given patient. Can throw BadArgumentException if argument is blank or
+   * null.
+   *
+   * @param patientId the patient id
+   * @return collection with all saved notes
+   */
+  @Override
+  @GetMapping("/id/get")
+  @ResponseStatus(HttpStatus.OK)
+  public History getPatientHistoryByPatientId(@RequestParam int patientId) {
+
+    if (patientId <= 0) {
+      logger.warn(
+          "Error, invalid argument for patientId:'"
+              + patientId
+              + "'. error: can't be null or blank.");
+      throw new BadArgumentException("KO, invalid argument.");
+    }
+    logger.trace("Getting history for patientId: " + patientId);
+
+    return patientHistoryService.getPatientHistoryById(patientId);
   }
 
   /**
@@ -130,10 +162,11 @@ public class PatientHistoryControllerImpl implements PatientHistoryController {
   @Override
   @PutMapping("/note/update")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public History updateNote(@Valid @RequestBody UpdateNoteDto updateNoteDto, BindingResult bindingResult) {
+  public History updateNote(
+      @Valid @RequestBody UpdateNoteDto updateNoteDto, BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
       List<String> array =
-              bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
+          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();
       logger.warn("Error, invalid argument:" + array);
       throw new BadArgumentException("KO, invalid argument.");
     }

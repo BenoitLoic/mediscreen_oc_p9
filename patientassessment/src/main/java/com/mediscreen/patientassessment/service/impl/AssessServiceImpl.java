@@ -4,15 +4,14 @@ import com.mediscreen.patientassessment.constant.AssessMessages;
 import com.mediscreen.patientassessment.constant.TriggerKeywords;
 import com.mediscreen.patientassessment.constant.TriggerKeywordsOccurrenceCount;
 import com.mediscreen.patientassessment.exception.DataNotFoundException;
+import com.mediscreen.patientassessment.feign.PatientHistoryClient;
 import com.mediscreen.patientassessment.feign.PatientInfoClient;
 import com.mediscreen.patientassessment.model.Assessment;
 import com.mediscreen.patientassessment.model.History;
 import com.mediscreen.patientassessment.model.Note;
 import com.mediscreen.patientassessment.model.PatientInfo;
-import com.mediscreen.patientassessment.repository.PatientHistoryRepository;
 import com.mediscreen.patientassessment.service.AssessService;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-/**
- * Assess service implementation.
- * Contains method that calculate and return the assessment.
- */
+/** Assess service implementation. Contains method that calculate and return the assessment. */
 @Service
 public class AssessServiceImpl implements AssessService {
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private PatientInfoClient patientInfoClient;
-  @Autowired private PatientHistoryRepository patientHistoryRepository;
+  @Autowired private PatientHistoryClient patientHistoryClient;
 
   /**
    * Get the patient assess defined by its ID.
@@ -70,26 +66,26 @@ public class AssessServiceImpl implements AssessService {
   }
 
   private History getHistoryById(int patientId) {
-    Optional<History> historyOptional = patientHistoryRepository.findHistoryByPatientId(patientId);
-    if (historyOptional.isEmpty()) {
+    History history = patientHistoryClient.getPatientHistoryById(patientId);
+    if (history == null) {
       logger.warn("Error, can't find patient history with id=" + patientId);
       throw new DataNotFoundException("KO, patient doesn't exist.");
     }
-    return historyOptional.get();
+    return history;
   }
 
   private History getHistoryByFamilyNameAndGivenName(String familyName, String givenName) {
-    Optional<History> historyOptional =
-        patientHistoryRepository.findHistoryByFamilyNameAndGivenName(familyName, givenName);
-    if (historyOptional.isEmpty()) {
-      logger.warn("Error, can't find patient history for: " + familyName + " - " + givenName);
+    History history =
+        patientHistoryClient.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName);
+    if (history == null) {
+      logger.warn("Error, can't find history for patient : " + familyName + " - " + givenName);
       throw new DataNotFoundException("KO, patient doesn't exist.");
     }
-    return historyOptional.get();
+    return history;
   }
 
   private PatientInfo getPatientInfoById(int patientId) {
-    PatientInfo patientInfo = patientInfoClient.getPatientByID(patientId);
+    PatientInfo patientInfo = patientInfoClient.getPatientById(patientId);
     if (patientInfo == null) {
       logger.warn("Error, can't find patient with id=" + patientId);
       throw new DataNotFoundException("KO, patient doesn't exist.");

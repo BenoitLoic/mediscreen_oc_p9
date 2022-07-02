@@ -18,7 +18,16 @@ public interface PatientHistoryController {
    * @param givenName the patient's firstname
    * @return collection with all saved notes
    */
-  History getPatientHistory(String familyName, String givenName);
+  History getPatientHistoryByFamilyNameAndGivenName(String familyName, String givenName);
+
+  /**
+   * Get all Notes for the given patient. Can throw BadArgumentException if argument is blank or
+   * null.
+   *
+   * @param patientId the patient id
+   * @return collection with all saved notes
+   */
+  History getPatientHistoryByPatientId(int patientId);
 
   /**
    * Update the patient history based on the patient ID. Can throw BadArgumentException if either
@@ -46,7 +55,7 @@ public interface PatientHistoryController {
    * @param addNoteDto the note to create
    * @return the patient history
    */
-  History addNote(AddNoteDto addNoteDto,BindingResult bindingResult);
+  History addNote(AddNoteDto addNoteDto, BindingResult bindingResult);
 
   /**
    * Update the note from an existing patient history.
@@ -54,5 +63,5 @@ public interface PatientHistoryController {
    * @param updateNoteDto the note to update.
    * @return the updated history
    */
-  History updateNote(UpdateNoteDto updateNoteDto,BindingResult bindingResult);
+  History updateNote(UpdateNoteDto updateNoteDto, BindingResult bindingResult);
 }

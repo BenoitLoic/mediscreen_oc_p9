@@ -323,9 +323,9 @@
             </div>
             <div class="form-group">
               <label for="noteNoteEditForm">Note</label>
-              <input type="text" ngModel="{{actualNote?.text}}" name="text" class="form-control" id="noteNoteEditForm"
+              <textarea type="text" ngModel="{{actualNote?.text}}" name="text" class="form-control" id="noteNoteEditForm"
                      placeholder="{{actualNote?.text}}"
-                     required>
+                        required></textarea>
             </div>
 
             <div class="modal-footer">

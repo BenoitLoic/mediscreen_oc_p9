@@ -3,12 +3,12 @@ package com.mediscreen.patientassessment.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+/**
+ * Model for patient History object.
+ */
 public class History {
-  @Id private String id;
+  private String id;
   private Integer patientId;
   private String familyName;
   private String givenName;

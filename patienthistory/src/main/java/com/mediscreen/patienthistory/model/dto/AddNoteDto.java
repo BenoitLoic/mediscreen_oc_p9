@@ -3,6 +3,9 @@ package com.mediscreen.patienthistory.model.dto;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Dto for addNote feature.
+ */
 public class AddNoteDto {
   @NotNull private Integer patientId;
   @NotNull private String textNote;

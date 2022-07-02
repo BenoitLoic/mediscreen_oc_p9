@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
+/** Dto for Update Note feature. */
 public class UpdateNoteDto {
   @NotNull private Integer patientId;
   @NotNull private LocalDateTime date;
