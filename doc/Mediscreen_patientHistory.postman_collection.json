@@ -33,7 +33,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"patientId\": 5,\n    \"familyName\": \"createFamilyNameTest\",\n    \"givenName\": \"createGivenNameTest\",\n    \"notes\": [\n        {\n            \"date\": \"2022-06-22T16:46:19\",\n            \"text\": \"J'ajoute du texte par ici et par là !\"\n        }\n    ]\n}"
+					"raw": "{\n    \"patientId\": 8,\n    \"familyName\": \"FamilyNameTest\",\n    \"givenName\": \"GivenNameTest\",\n    \"textNote\": \"J'ajoute du texte par ici et par là !\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8082/patHistory/add",
@@ -77,7 +77,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"patientId\": 6,\n    \"familyName\": \"\",\n    \"givenName\": \"createGivenNameTest\",\n    \"notes\": [\n        {\n            \"date\": \"2022-06-22T16:46:19\",\n            \"text\": \"J'ajoute du texte par ici et par là !\"\n        }\n    ]\n}"
+					"raw": "{\n    \"patientId\": 6,\n    \"familyName\": \"\",\n    \"givenName\": \"createGivenNameTest\",\n    \"textNote\": \"J'ajoute du texte par ici et par là !\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8082/patHistory/add",
@@ -121,7 +121,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"patientId\": 5,\n    \"familyName\": \"createFamilyNameTest\",\n    \"givenName\": \"createGivenNameTest\",\n    \"notes\": [\n        {\n            \"date\": \"2022-06-22T16:46:19\",\n            \"text\": \"J'ajoute du texte par ici et par là !\"\n        }\n    ]\n}"
+					"raw": "{\n    \"patientId\": 5,\n    \"familyName\": \"createFamilyNameTest\",\n    \"givenName\": \"createGivenNameTest\",\n    \"textNote\": \"J'ajoute du texte par ici et par là aussi !\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8082/patHistory/add",
@@ -159,7 +159,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8082/patHistory/get?familyName=lastNameTest1&givenName=firstNameTest1",
+					"raw": "http://localhost:8082/patHistory/name/get?familyName=FamilyNameTest&givenName=GivenNameTest",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -167,16 +167,17 @@
 					"port": "8082",
 					"path": [
 						"patHistory",
+						"name",
 						"get"
 					],
 					"query": [
 						{
 							"key": "familyName",
-							"value": "lastNameTest1"
+							"value": "FamilyNameTest"
 						},
 						{
 							"key": "givenName",
-							"value": "firstNameTest1"
+							"value": "GivenNameTest"
 						}
 					]
 				},
@@ -203,7 +204,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8082/patHistory/get?familyName=lastNameTest1&givenName=",
+					"raw": "http://localhost:8082/patHistory/name/get?familyName=lastNameTest1&givenName=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -211,6 +212,7 @@
 					"port": "8082",
 					"path": [
 						"patHistory",
+						"name",
 						"get"
 					],
 					"query": [
@@ -247,7 +249,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8082/patHistory/get?familyName=lastNameTest5&givenName=firstNameTest1",
+					"raw": "http://localhost:8082/patHistory/name/get?familyName=lastNameTest5&givenName=firstNameTest1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -255,6 +257,7 @@
 					"port": "8082",
 					"path": [
 						"patHistory",
+						"name",
 						"get"
 					],
 					"query": [
@@ -545,6 +548,276 @@
 					]
 				},
 				"description": "Mise à jour d'un historique inconnu.\n\nRésultat:\n\n```\n{\n    \"timestamp\": \"2022-06-22T15:29:36.441+00:00\",\n    \"status\": 404,\n    \"error\": \"Not Found\",\n    \"path\": \"/patHistory/update\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "addNote 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientId\" : \"5\",\n    \"textNote\":\"Patient states that they are 'feeling terrific' Weight at or below recommended level\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/patHistory/note/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"patHistory",
+						"note",
+						"add"
+					]
+				},
+				"description": "Ajout d'une note pour un historique existant.\n\nRemarque: tout les champs sont nécessaires.\n\nréponse :\n\n``` json\n{\n    \"id\": \"62c060f941e1f85b5dbbc425\",\n    \"patientId\": 5,\n    \"familyName\": \"createFamilyNameTest\",\n    \"givenName\": \"createGivenNameTest\",\n    \"notes\": [\n        {\n            \"date\": \"2022-07-02T15:15:00\",\n            \"text\": \"J'ajoute du texte par ici et par là !\"\n        },\n        {\n            \"date\": \"2022-07-02T15:15:00\",\n            \"text\": \"Patient states that they are 'feeling terrific' Weight at or below recommended level\"\n        }\n    ]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "addNote 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientId\" : \"15\",\n    \"textNote\":\"Patient states that they are 'feeling terrific' Weight at or below recommended level\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/patHistory/note/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"patHistory",
+						"note",
+						"add"
+					]
+				},
+				"description": "Ajout d'une note pour un historique inconnu.\n\nréponse :\n\n```\n{\n    \"timestamp\": \"2022-07-02T15:36:59.819+00:00\",\n    \"status\": 404,\n    \"error\": \"Not Found\",\n    \"path\": \"/patHistory/note/add\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "addNote 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientId\" : \"\",\n    \"textNote\":\"Patient states that they are 'feeling terrific' Weight at or below recommended level\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/patHistory/note/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"patHistory",
+						"note",
+						"add"
+					]
+				},
+				"description": "Ajout d'une note avec un paramètre non valide.\n\nréponse:\n\n```\n{\n    \"timestamp\": \"2022-07-02T15:37:35.674+00:00\",\n    \"status\": 400,\n    \"error\": \"Bad Request\",\n    \"path\": \"/patHistory/note/add\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "updateNote 202",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientId\" : \"8\",\n    \"date\": \"2022-07-02T15:17:00\",\n    \"text\":\"Updated Note!\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/patHistory/note/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"patHistory",
+						"note",
+						"update"
+					]
+				},
+				"description": "Mise à jour d'une note d'un historique.\n\nRemarque: tous les champs sont obligatoires. La mise à jour se base sur la date et l'id du patient.\n\nréponse :\n\n``` json\n{\n    \"id\": \"62c0618541e1f85b5dbbc426\",\n    \"patientId\": 8,\n    \"familyName\": \"FamilyNameTest\",\n    \"givenName\": \"GivenNameTest\",\n    \"notes\": [\n        {\n            \"date\": \"2022-07-02T15:17:00\",\n            \"text\": \"Updated !\"\n        }\n    ]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "updateNote 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientId\" : \"15651\",\n    \"date\": \"2022-07-02T15:17:00\",\n    \"text\":\"Updated Note!\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/patHistory/note/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"patHistory",
+						"note",
+						"update"
+					]
+				},
+				"description": "Mise à jour d'une note d'un historique inconnu.\n\nréponse :\n\n```\n{\n    \"timestamp\": \"2022-07-02T15:46:52.975+00:00\",\n    \"status\": 404,\n    \"error\": \"Not Found\",\n    \"path\": \"/patHistory/note/update\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "updateNote 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientId\" : \"8\",\n    \"date\": \"\",\n    \"text\":\"Updated Note!\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/patHistory/note/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"patHistory",
+						"note",
+						"update"
+					]
+				},
+				"description": "Mise à jour d'une note avec un paramètre non valide.\n\nréponse :\n\n```\n{\n    \"timestamp\": \"2022-07-02T15:49:04.996+00:00\",\n    \"status\": 400,\n    \"error\": \"Bad Request\",\n    \"path\": \"/patHistory/note/update\"\n}\n\n```"
 			},
 			"response": []
 		}

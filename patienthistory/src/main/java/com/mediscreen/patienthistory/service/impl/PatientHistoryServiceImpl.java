@@ -146,8 +146,6 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
     note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
     note.setText(addPatientHistoryDto.getTextNote());
     history.setNotes(List.of(note));
-    System.out.println("dto = " + addPatientHistoryDto);
-    System.out.println("entity = " + history);
     // save
     logger.trace("Saving new history.");
     return patientHistoryRepository.save(history);

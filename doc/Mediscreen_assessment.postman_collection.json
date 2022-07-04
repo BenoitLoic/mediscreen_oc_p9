@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "ca2d12b0-66e7-434e-a134-90168aa2e50b",
+		"name": "Mediscreen_assessment",
+		"description": "API patient_assessment de Mediscreen.\n\nPermet l'évaluation du risque d'apparition d'un diabète chez un patient.\n\nLe calcul se base sur la présence de différents mots clés dans les notes du praticien, ainsi que l'age et le sexe du patient.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13096235"
+	},
+	"item": [
+		{
+			"name": "assess<id> 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"message should be None\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"None\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assess/id?patientId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assess",
+						"id"
+					],
+					"query": [
+						{
+							"key": "patientId",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Demande d'évaluation d'un patient défini par son ID.\n\nRemarque: Le patient doit avoir ses informations personnelles et son historique préalablement sauvegardés.\n\nRésponse:\n\n``` json\n{\n    \"familyName\": \"TestBorderline\",\n    \"givenName\": \"Test\",\n    \"age\": 77,\n    \"message\": \"Borderline\"\n}\n\n```"
+			},
+			"response": [
+				{
+					"name": "assess<id> 201",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/assess/id?patientId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"assess",
+								"id"
+							],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 02 Jul 2022 16:48:59 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"familyName\": \"TestNone\",\n    \"givenName\": \"Test\",\n    \"age\": 56,\n    \"message\": \"None\"\n}"
+				}
+			]
+		},
+		{
+			"name": "assess<id> 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assess/id?patientId=200",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assess",
+						"id"
+					],
+					"query": [
+						{
+							"key": "patientId",
+							"value": "200"
+						}
+					]
+				},
+				"description": "Demande d'évaluation d'un patient défini par son ID lorsque le patient est inconnu.\n\nRésponse:\n\n``` plaintext\n{\n    \"timestamp\": \"2022-07-02T16:36:27.202+00:00\",\n    \"status\": 404,\n    \"error\": \"Not Found\",\n    \"path\": \"/assess/id\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "assess<id> 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assess/id?patientId=aze",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assess",
+						"id"
+					],
+					"query": [
+						{
+							"key": "patientId",
+							"value": "aze"
+						}
+					]
+				},
+				"description": "Demande d'évaluation d'un patient défini par son ID avec un paramètre non valide.\n\nRésponse:"
+			},
+			"response": []
+		},
+		{
+			"name": "assess<name> 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"message should be None\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"None\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assess/name?familyName=TestNone&givenName=Test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assess",
+						"name"
+					],
+					"query": [
+						{
+							"key": "familyName",
+							"value": "TestNone"
+						},
+						{
+							"key": "givenName",
+							"value": "Test"
+						}
+					]
+				},
+				"description": "Demande d'évaluation d'un patient défini par son nom de famille(familyName) et son prénom(givenName).\n\nRemarque: Le patient doit avoir ses informations personnelles et son historique préalablement sauvegardés.\n\nRésponse:\n\n``` json\n{\n    \"familyName\": \"TestNone\",\n    \"givenName\": \"Test\",\n    \"age\": 56,\n    \"message\": \"None\"\n}\n\n```"
+			},
+			"response": [
+				{
+					"name": "assess<name> 201",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/assess/name?familyName=TestNone&givenName=Test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"assess",
+								"name"
+							],
+							"query": [
+								{
+									"key": "familyName",
+									"value": "TestNone"
+								},
+								{
+									"key": "givenName",
+									"value": "Test"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 02 Jul 2022 16:47:22 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"familyName\": \"TestNone\",\n    \"givenName\": \"Test\",\n    \"age\": 56,\n    \"message\": \"None\"\n}"
+				}
+			]
+		},
+		{
+			"name": "assess<name>400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assess/name?familyName=TestEarlyOnset&givenName=",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assess",
+						"name"
+					],
+					"query": [
+						{
+							"key": "familyName",
+							"value": "TestEarlyOnset"
+						},
+						{
+							"key": "givenName",
+							"value": ""
+						}
+					]
+				},
+				"description": "Demande d'évaluation d'un patient défini par son nom de famille(familyName) et son prénom(givenName) avec un des deux paramètres non valide.\n\nRésponse:\n\n```\n{\n    \"timestamp\": \"2022-07-02T16:46:49.824+00:00\",\n    \"status\": 400,\n    \"error\": \"Bad Request\",\n    \"path\": \"/assess/name\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "assess<name> 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assess/name?familyName=unknown&givenName=test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assess",
+						"name"
+					],
+					"query": [
+						{
+							"key": "familyName",
+							"value": "unknown"
+						},
+						{
+							"key": "givenName",
+							"value": "test"
+						}
+					]
+				},
+				"description": "Demande d'évaluation d'un patient défini par son nom de famille(familyName) et son prénom(givenName) lorsque le patient est inconnu.\n\nRésponse:\n\n```\n{\n    \"timestamp\": \"2022-07-02T16:46:31.359+00:00\",\n    \"status\": 404,\n    \"error\": \"Not Found\",\n    \"path\": \"/assess/name\"\n}\n\n```"
+			},
+			"response": []
+		}
+	]
+}
