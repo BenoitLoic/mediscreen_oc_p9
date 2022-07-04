@@ -141,6 +141,7 @@ export class AppComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
+        this.onOpenModal('addHistory',this.getPatient);
       }
     })
   }
