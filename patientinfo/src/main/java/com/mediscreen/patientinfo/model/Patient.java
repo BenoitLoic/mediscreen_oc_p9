@@ -2,10 +2,7 @@ package com.mediscreen.patientinfo.model;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Patient entity.
@@ -14,7 +11,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "patient")
 public class Patient {
-  @Id private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
 
   @Column(name = "family_name")
   private String familyName;
