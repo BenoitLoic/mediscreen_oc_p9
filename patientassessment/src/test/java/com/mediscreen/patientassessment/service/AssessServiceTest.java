@@ -36,12 +36,11 @@ class AssessServiceTest {
   private final Note noKeywordNote = new Note();
   private final Note twoKeywordNote = new Note();
   private final Note threeKeywordNote = new Note();
-  @InjectMocks AssessServiceImpl assessService;
   private String message;
   private History patientHistory;
   @Mock private PatientHistoryClient patientHistoryClientMock;
   @Mock private PatientInfoClient patientInfoClientMock;
-
+  @InjectMocks AssessServiceImpl assessService;
   @BeforeEach
   void setUp() {
 
