@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientHistoryServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">patienthistory</a> &gt; <a href="index.source.html" class="el_package">com.mediscreen.patienthistory.service.impl</a> &gt; <span class="el_source">PatientHistoryServiceImpl.java</span></div><h1>PatientHistoryServiceImpl.java</h1><pre class="source lang-java linenums">package com.mediscreen.patienthistory.service.impl;
+
+import com.mediscreen.patienthistory.exception.DataAlreadyExistException;
+import com.mediscreen.patienthistory.exception.DataNotFoundException;
+import com.mediscreen.patienthistory.model.History;
+import com.mediscreen.patienthistory.model.Note;
+import com.mediscreen.patienthistory.model.dto.AddNoteDto;
+import com.mediscreen.patienthistory.model.dto.AddPatientHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
+import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
+import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
+import com.mediscreen.patienthistory.service.PatientHistoryService;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+/** Implementation for PatientHistoryService. */
+@Service
+<span class="fc" id="L27">public class PatientHistoryServiceImpl implements PatientHistoryService {</span>
+<span class="fc" id="L28">  private final Logger logger = LoggerFactory.getLogger(PatientHistoryServiceImpl.class);</span>
+  @Autowired PatientHistoryRepository patientHistoryRepository;
+
+  /**
+   * Get all the notes saved for the given patient.
+   *
+   * @param familyName the patient family namenew ObjectMapper()
+   * @param givenName the patient given name
+   * @return collection of Note
+   */
+  @Override
+  public History getPatientHistoryByFamilyNameAndGivenName(String familyName, String givenName) {
+<span class="fc" id="L40">    logger.trace(&quot;service, get patient history in db.&quot;);</span>
+<span class="fc" id="L41">    Optional&lt;History&gt; history =</span>
+<span class="fc" id="L42">        patientHistoryRepository.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(familyName, givenName);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    if (history.isEmpty()) {</span>
+<span class="fc" id="L44">      logger.warn(&quot;Error, patient: &quot; + familyName + &quot; - &quot; + givenName + &quot; doesn't exist.&quot;);</span>
+<span class="fc" id="L45">      throw new DataNotFoundException(&quot;KO, patient doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L47">    return history.get();</span>
+  }
+
+  /**
+   * Get history saved for the given patient.
+   *
+   * @param patientId the patient id
+   * @return collection of Note
+   */
+  @Override
+  public History getPatientHistoryById(int patientId) {
+<span class="nc" id="L58">    logger.trace(&quot;service, get patient history in db.&quot;);</span>
+<span class="nc" id="L59">    Optional&lt;History&gt; history = patientHistoryRepository.findHistoryByPatientId(patientId);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">    if (history.isEmpty()) {</span>
+<span class="nc" id="L61">      logger.warn(&quot;Error, patient with id= &quot; + patientId + &quot; doesn't exist.&quot;);</span>
+<span class="nc" id="L62">      throw new DataNotFoundException(&quot;KO, patient doesn't exist.&quot;);</span>
+    }
+<span class="nc" id="L64">    return history.get();</span>
+  }
+
+  /**
+   * Update an existing patient History. This method only update nonNull and nonBlank fields. can
+   * throw DataNotFoundException if there is no History for the given patientId.
+   *
+   * @param updateHistoryDto the history to update.
+   * @return the updated History.
+   */
+  @Override
+  public History updatePatientHistory(UpdateHistoryDto updateHistoryDto) {
+
+    // Get History from db
+<span class="fc" id="L78">    Optional&lt;History&gt; savedHistory =</span>
+<span class="fc" id="L79">        patientHistoryRepository.findHistoryByPatientId(updateHistoryDto.getPatientId());</span>
+    // throw DataNotFoundException if Optional.empty
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    if (savedHistory.isEmpty()) {</span>
+<span class="fc" id="L82">      logger.warn(&quot;Error, can't find patient history for id: &quot; + updateHistoryDto.getPatientId());</span>
+<span class="fc" id="L83">      throw new DataNotFoundException(&quot;KO, patient history doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L85">    History patientHistory = savedHistory.get();</span>
+<span class="fc" id="L86">    int count = 0;</span>
+    // Update givenName/familyName if !=
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">    if (!updateHistoryDto.getFamilyName().isBlank()</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        &amp;&amp; !updateHistoryDto.getFamilyName().equals(patientHistory.getFamilyName())) {</span>
+<span class="fc" id="L90">      logger.trace(&quot;updating familyName&quot;);</span>
+<span class="fc" id="L91">      count++;</span>
+<span class="fc" id="L92">      patientHistory.setFamilyName(updateHistoryDto.getFamilyName());</span>
+    }
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">    if (!updateHistoryDto.getGivenName().isBlank()</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        &amp;&amp; !updateHistoryDto.getGivenName().equals(patientHistory.getGivenName())) {</span>
+<span class="nc" id="L96">      logger.trace(&quot;updating givenName&quot;);</span>
+<span class="nc" id="L97">      count++;</span>
+<span class="nc" id="L98">      patientHistory.setGivenName(updateHistoryDto.getGivenName());</span>
+    }
+    // update note if dto.note.date == history.note.date
+<span class="fc bfc" id="L101" title="All 4 branches covered.">    if (!updateHistoryDto.getNotes().isEmpty() &amp;&amp; patientHistory.getNotes().isEmpty()) {</span>
+<span class="fc" id="L102">      logger.trace(&quot;adding text note.&quot;);</span>
+<span class="fc" id="L103">      count++;</span>
+<span class="fc" id="L104">      patientHistory.setNotes(updateHistoryDto.getNotes());</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">    } else if (!updateHistoryDto.getNotes().isEmpty()) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">      for (Note upNote : updateHistoryDto.getNotes()) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (Note note : patientHistory.getNotes()) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">          if (note.getDate().equals(upNote.getDate())) {</span>
+<span class="fc" id="L109">            logger.trace(&quot;updating text note.&quot;);</span>
+<span class="fc" id="L110">            count++;</span>
+<span class="fc" id="L111">            note.setText(upNote.getText());</span>
+          }
+<span class="fc" id="L113">        }</span>
+<span class="fc" id="L114">      }</span>
+    }
+<span class="fc" id="L116">    logger.info(</span>
+        &quot;Updating &quot;
+            + count
+            + &quot; fields for patient history with id=&quot;
+<span class="fc" id="L120">            + patientHistory.getPatientId());</span>
+<span class="fc" id="L121">    return patientHistoryRepository.save(patientHistory);</span>
+  }
+
+  /**
+   * Create a new History. Can throw DataAlreadyExistException if history.patientId already exist in
+   * db.
+   *
+   * @param addPatientHistoryDto the history to create.
+   * @return the History saved.
+   */
+  @Override
+  public History createPatientHistory(AddPatientHistoryDto addPatientHistoryDto) {
+
+    // check if history already exist
+<span class="fc" id="L135">    Optional&lt;History&gt; savedHistory =</span>
+<span class="fc" id="L136">        patientHistoryRepository.findHistoryByPatientId(addPatientHistoryDto.getPatientId());</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">    if (savedHistory.isPresent()) {</span>
+<span class="fc" id="L138">      logger.warn(</span>
+<span class="fc" id="L139">          &quot;Error, History already exist for patient id=&quot; + addPatientHistoryDto.getPatientId());</span>
+<span class="fc" id="L140">      throw new DataAlreadyExistException(&quot;KO, patientHistory already exist.&quot;);</span>
+    }
+    // map dto to History
+<span class="fc" id="L143">    History history = new History();</span>
+<span class="fc" id="L144">    BeanUtils.copyProperties(addPatientHistoryDto, history);</span>
+<span class="fc" id="L145">    Note note = new Note();</span>
+<span class="fc" id="L146">    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));</span>
+<span class="fc" id="L147">    note.setText(addPatientHistoryDto.getTextNote());</span>
+<span class="fc" id="L148">    history.setNotes(List.of(note));</span>
+    // save
+<span class="fc" id="L150">    logger.trace(&quot;Saving new history.&quot;);</span>
+<span class="fc" id="L151">    return patientHistoryRepository.save(history);</span>
+  }
+
+  /**
+   * Create a new Note for the given History.
+   *
+   * @param addNoteDto the note to add
+   * @return the patient's history
+   */
+  @Override
+  public History createPatientHistoryNote(AddNoteDto addNoteDto) {
+    // check if history exist
+<span class="fc" id="L163">    Optional&lt;History&gt; savedHistory =</span>
+<span class="fc" id="L164">        patientHistoryRepository.findHistoryByPatientId(addNoteDto.getPatientId());</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">    if (savedHistory.isEmpty()) {</span>
+<span class="fc" id="L166">      logger.warn(&quot;Error, can't find patient history for id: &quot; + addNoteDto.getPatientId());</span>
+<span class="fc" id="L167">      throw new DataNotFoundException(&quot;KO, patient history doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L169">    Note noteToAdd = new Note();</span>
+<span class="fc" id="L170">    noteToAdd.setText(addNoteDto.getTextNote());</span>
+<span class="fc" id="L171">    noteToAdd.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));</span>
+<span class="fc" id="L172">    History historyToSave = savedHistory.get();</span>
+<span class="fc" id="L173">    Collection&lt;Note&gt; notes = new ArrayList&lt;&gt;(historyToSave.getNotes());</span>
+<span class="fc" id="L174">    notes.add(noteToAdd);</span>
+<span class="fc" id="L175">    historyToSave.setNotes(notes);</span>
+    // save
+<span class="fc" id="L177">    return patientHistoryRepository.save(historyToSave);</span>
+  }
+
+  /**
+   * Update a Note from an existing Patient History.
+   *
+   * @param updateNoteDto the note to update.
+   * @return the patient history updated.
+   */
+  @Override
+  public History updatePatientHistoryNote(UpdateNoteDto updateNoteDto) {
+    // check if history exist
+<span class="fc" id="L189">    Optional&lt;History&gt; savedHistory =</span>
+<span class="fc" id="L190">        patientHistoryRepository.findHistoryByPatientId(updateNoteDto.getPatientId());</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">    if (savedHistory.isEmpty()) {</span>
+<span class="fc" id="L192">      logger.warn(&quot;Error, can't find patient history for id: &quot; + updateNoteDto.getPatientId());</span>
+<span class="fc" id="L193">      throw new DataNotFoundException(&quot;KO, patient history doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L195">    History history = savedHistory.get();</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">    for (Note note : history.getNotes()) {</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">      if (note.getDate().equals(updateNoteDto.getDate())) {</span>
+<span class="fc" id="L198">        logger.trace(&quot;Updating text.&quot;);</span>
+<span class="fc" id="L199">        note.setText(updateNoteDto.getText());</span>
+<span class="fc" id="L200">        break;</span>
+      }
+<span class="nc" id="L202">    }</span>
+
+<span class="fc" id="L204">    return patientHistoryRepository.save(history);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

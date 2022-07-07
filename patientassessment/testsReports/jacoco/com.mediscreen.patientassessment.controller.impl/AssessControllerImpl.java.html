@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssessControllerImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">patientassessment</a> &gt; <a href="index.source.html" class="el_package">com.mediscreen.patientassessment.controller.impl</a> &gt; <span class="el_source">AssessControllerImpl.java</span></div><h1>AssessControllerImpl.java</h1><pre class="source lang-java linenums">package com.mediscreen.patientassessment.controller.impl;
+
+import com.mediscreen.patientassessment.controller.AssessController;
+import com.mediscreen.patientassessment.exception.BadArgumentException;
+import com.mediscreen.patientassessment.model.Assessment;
+import com.mediscreen.patientassessment.service.AssessService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+/** Implementation for AssessController. */
+@RestController
+@CrossOrigin
+@RequestMapping(&quot;/assess&quot;)
+<span class="fc" id="L22">public class AssessControllerImpl implements AssessController {</span>
+
+<span class="fc" id="L24">  private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+  @Autowired private AssessService assessService;
+
+  /**
+   * Get assess for the given patient defined by its id.
+   *
+   * @param patientId the patient ID
+   * @return the assessment
+   */
+  @Override
+  @PostMapping(&quot;/id&quot;)
+  @ResponseStatus(HttpStatus.OK)
+  public Assessment getAssessWithId(@RequestParam int patientId) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    if (patientId &lt;= 0) {</span>
+<span class="fc" id="L39">      logger.warn(&quot;Error, patientId must be &gt; 0.&quot;);</span>
+<span class="fc" id="L40">      throw new BadArgumentException(&quot;KO, id is not valid.&quot;);</span>
+    }
+<span class="fc" id="L42">    logger.trace(&quot;Get assess for id=&quot; + patientId);</span>
+<span class="fc" id="L43">    return assessService.getAssessWithId(patientId);</span>
+  }
+
+  /**
+   * Get assess for the given patient defined by its familyName and givenName.
+   *
+   * @param familyName the patient's familyName
+   * @param givenName the patient's givenName
+   * @return the assessment
+   */
+  @Override
+  @PostMapping(&quot;/name&quot;)
+  @ResponseStatus(HttpStatus.OK)
+  public Assessment getAssessWithFamilyNameAndGivenName(
+      @RequestParam String familyName, @RequestParam String givenName) {
+<span class="pc bpc" id="L58" title="1 of 4 branches missed.">    if (familyName.isBlank() || givenName.isBlank()) {</span>
+<span class="fc" id="L59">      logger.warn(&quot;Error, patientId must be &gt; 0.&quot;);</span>
+<span class="fc" id="L60">      throw new BadArgumentException(&quot;KO, id is not valid.&quot;);</span>
+    }
+<span class="fc" id="L62">    logger.trace(&quot;Get assess for patient: &quot; + familyName + &quot; - &quot; + givenName);</span>
+<span class="fc" id="L63">    return assessService.getAssessWithFamilyNameAndGivenName(familyName, givenName);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

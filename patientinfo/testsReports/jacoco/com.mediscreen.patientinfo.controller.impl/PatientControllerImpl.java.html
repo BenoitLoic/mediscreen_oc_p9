@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientControllerImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">patientinfo</a> &gt; <a href="index.source.html" class="el_package">com.mediscreen.patientinfo.controller.impl</a> &gt; <span class="el_source">PatientControllerImpl.java</span></div><h1>PatientControllerImpl.java</h1><pre class="source lang-java linenums">package com.mediscreen.patientinfo.controller.impl;
+
+import com.mediscreen.patientinfo.controller.PatientController;
+import com.mediscreen.patientinfo.exception.BadArgumentException;
+import com.mediscreen.patientinfo.model.Patient;
+import com.mediscreen.patientinfo.model.dto.CreatePatientDto;
+import com.mediscreen.patientinfo.model.dto.UpdatePatientDto;
+import com.mediscreen.patientinfo.service.PatientService;
+import java.util.List;
+import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+/** Implementation for Patient Rest Controller. */
+@RestController
+@CrossOrigin
+@RequestMapping(&quot;/patient&quot;)
+<span class="fc" id="L31">public class PatientControllerImpl implements PatientController {</span>
+
+<span class="fc" id="L33">  Logger logger = LoggerFactory.getLogger(PatientControllerImpl.class);</span>
+  @Autowired private PatientService patientService;
+
+  /**
+   * Get the patient with the given familyName (lastname) and givenName (firstname).
+   *
+   * @param familyName the patient family name
+   * @param givenName the patient given name
+   * @return the patient information
+   */
+  @GetMapping(value = &quot;/get&quot;)
+  @ResponseStatus(HttpStatus.OK)
+  public Patient getPatientByFamilyNameAndLastName(
+      @RequestParam(name = &quot;family&quot;) String familyName,
+      @RequestParam(name = &quot;given&quot;) String givenName) {
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">    if (familyName.isBlank() || givenName.isBlank()) {</span>
+<span class="fc" id="L49">      logger.warn(</span>
+          &quot;Error, invalid parameters for familyName: &quot;
+              + familyName
+              + &quot; givenName: &quot;
+              + givenName
+              + &quot;.&quot;);
+<span class="fc" id="L55">      throw new BadArgumentException(&quot;KO, invalid argument.&quot;);</span>
+    }
+<span class="fc" id="L57">    logger.trace(&quot;Get patient: &quot; + familyName + &quot; - &quot; + givenName);</span>
+
+<span class="fc" id="L59">    return patientService.getPatientByFamilyNameAndGivenName(familyName, givenName);</span>
+  }
+
+  /**
+   * Update the given patient if exist. Can throw DataNotFound if it doesn't exist,
+   * BadArgumentException if input data is incorrect
+   *
+   * @param patient the patient to update
+   * @return the updated patient.
+   */
+  @Override
+  @PutMapping(&quot;/update&quot;)
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public Patient updatePatient(
+      @Valid @RequestBody UpdatePatientDto patient, BindingResult bindingResult) {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    if (bindingResult.hasErrors()) {</span>
+<span class="fc" id="L75">      List&lt;String&gt; array =</span>
+<span class="fc" id="L76">          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();</span>
+<span class="fc" id="L77">      logger.warn(&quot;Error, invalid argument:&quot; + array);</span>
+<span class="fc" id="L78">      throw new BadArgumentException(&quot;KO, invalid argument.&quot;);</span>
+    }
+<span class="fc" id="L80">    logger.trace(</span>
+<span class="fc" id="L81">        &quot;Updating patient: &quot; + patient.getFamilyName() + &quot; - &quot; + patient.getGivenName() + &quot;.&quot;);</span>
+<span class="fc" id="L82">    return patientService.updatePatient(patient);</span>
+  }
+
+  /**
+   * Create a new patient. Can throw DataAlreadyExist if it already exists, BadArgumentException if
+   * input data is incorrect
+   *
+   * @param patient the patient to create
+   * @param bindingResult the binding result
+   * @return the patient saved in db.
+   */
+  @Override
+  @PostMapping(&quot;/add&quot;)
+  @ResponseStatus(HttpStatus.CREATED)
+  public Patient createPatient(
+      @Valid @RequestBody CreatePatientDto patient, BindingResult bindingResult) {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">    if (bindingResult.hasErrors()) {</span>
+<span class="fc" id="L99">      List&lt;String&gt; array =</span>
+<span class="fc" id="L100">          bindingResult.getFieldErrors().stream().map(FieldError::getField).toList();</span>
+<span class="fc" id="L101">      logger.warn(&quot;Error, invalid argument:&quot; + array);</span>
+<span class="fc" id="L102">      throw new BadArgumentException(&quot;KO, invalid argument.&quot;);</span>
+    }
+<span class="fc" id="L104">    logger.trace(</span>
+<span class="fc" id="L105">        &quot;Creating patient: &quot; + patient.getFamilyName() + &quot; - &quot; + patient.getGivenName() + &quot;.&quot;);</span>
+<span class="fc" id="L106">    return patientService.createPatient(patient);</span>
+  }
+
+  /**
+   * Get the patient with the given id.
+   *
+   * @param id the patient id
+   * @return the patient information
+   */
+  @Override
+  @GetMapping(value = &quot;/id/get&quot;)
+  @ResponseStatus(HttpStatus.OK)
+  public Patient getPatientById(@RequestParam int id) {
+<span class="fc bfc" id="L119" title="All 2 branches covered.">    if (id &lt; 1) {</span>
+<span class="fc" id="L120">      logger.warn(&quot;Error, invalid parameters for id: &quot; + id);</span>
+<span class="fc" id="L121">      throw new BadArgumentException(&quot;KO, invalid argument.&quot;);</span>
+    }
+<span class="fc" id="L123">    logger.trace(&quot;Get patient: id=&quot; + id);</span>
+
+<span class="fc" id="L125">    return patientService.getPatientById(id);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

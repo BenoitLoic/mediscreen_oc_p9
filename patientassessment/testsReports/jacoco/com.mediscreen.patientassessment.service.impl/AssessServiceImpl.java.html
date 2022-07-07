@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssessServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">patientassessment</a> &gt; <a href="index.source.html" class="el_package">com.mediscreen.patientassessment.service.impl</a> &gt; <span class="el_source">AssessServiceImpl.java</span></div><h1>AssessServiceImpl.java</h1><pre class="source lang-java linenums">package com.mediscreen.patientassessment.service.impl;
+
+import com.mediscreen.patientassessment.constant.AssessMessages;
+import com.mediscreen.patientassessment.constant.TriggerKeywords;
+import com.mediscreen.patientassessment.constant.TriggerKeywordsOccurrenceCount;
+import com.mediscreen.patientassessment.exception.DataNotFoundException;
+import com.mediscreen.patientassessment.feign.PatientHistoryClient;
+import com.mediscreen.patientassessment.feign.PatientInfoClient;
+import com.mediscreen.patientassessment.model.Assessment;
+import com.mediscreen.patientassessment.model.History;
+import com.mediscreen.patientassessment.model.Note;
+import com.mediscreen.patientassessment.model.PatientInfo;
+import com.mediscreen.patientassessment.service.AssessService;
+import java.time.LocalDate;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+/** Assess service implementation. Contains method that calculate and return the assessment. */
+@Service
+<span class="fc" id="L24">public class AssessServiceImpl implements AssessService {</span>
+
+<span class="fc" id="L26">  private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+  @Autowired private PatientInfoClient patientInfoClient;
+  @Autowired private PatientHistoryClient patientHistoryClient;
+
+  /**
+   * Get the patient assess defined by its ID.
+   *
+   * @param patientId the patient ID
+   * @return the assessement
+   */
+  @Override
+  public Assessment getAssessWithId(int patientId) {
+
+<span class="fc" id="L40">    PatientInfo patientInfo = getPatientInfoById(patientId);</span>
+<span class="fc" id="L41">    History patientHistory = getHistoryById(patientId);</span>
+<span class="fc" id="L42">    return getAssessment(patientInfo, patientHistory);</span>
+  }
+
+  /**
+   * Get the patient assess defined by its family-name and given-name.
+   *
+   * @param familyName the patient family-name
+   * @param givenName the patient given-name
+   * @return the assessment
+   */
+  @Override
+  public Assessment getAssessWithFamilyNameAndGivenName(String familyName, String givenName) {
+<span class="fc" id="L54">    PatientInfo patientInfo = getPatientInfoByFamilyNameAndGivenName(familyName, givenName);</span>
+<span class="fc" id="L55">    History patientHistory = getHistoryByFamilyNameAndGivenName(familyName, givenName);</span>
+<span class="fc" id="L56">    return getAssessment(patientInfo, patientHistory);</span>
+  }
+
+  private Assessment getAssessment(PatientInfo patientInfo, History history) {
+<span class="fc" id="L60">    int keywordCount = getKeywordCount(history);</span>
+<span class="fc" id="L61">    int age = calculateAge(patientInfo);</span>
+<span class="fc" id="L62">    String sex = patientInfo.getSex();</span>
+<span class="fc" id="L63">    Assessment assessment = generateAssessment(patientInfo, keywordCount, age, sex);</span>
+<span class="fc" id="L64">    logger.trace(&quot;Assess message = &quot; + assessment.getMessage());</span>
+<span class="fc" id="L65">    return assessment;</span>
+  }
+
+  private History getHistoryById(int patientId) {
+<span class="fc" id="L69">    History history = patientHistoryClient.getPatientHistoryById(patientId);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">    if (history == null) {</span>
+<span class="nc" id="L71">      logger.warn(&quot;Error, can't find patient history with id=&quot; + patientId);</span>
+<span class="nc" id="L72">      throw new DataNotFoundException(&quot;KO, patient doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L74">    return history;</span>
+  }
+
+  private History getHistoryByFamilyNameAndGivenName(String familyName, String givenName) {
+<span class="fc" id="L78">    History history =</span>
+<span class="fc" id="L79">        patientHistoryClient.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName);</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">    if (history == null) {</span>
+<span class="nc" id="L81">      logger.warn(&quot;Error, can't find history for patient : &quot; + familyName + &quot; - &quot; + givenName);</span>
+<span class="nc" id="L82">      throw new DataNotFoundException(&quot;KO, patient doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L84">    return history;</span>
+  }
+
+  private PatientInfo getPatientInfoById(int patientId) {
+<span class="fc" id="L88">    PatientInfo patientInfo = patientInfoClient.getPatientById(patientId);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">    if (patientInfo == null) {</span>
+<span class="fc" id="L90">      logger.warn(&quot;Error, can't find patient with id=&quot; + patientId);</span>
+<span class="fc" id="L91">      throw new DataNotFoundException(&quot;KO, patient doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L93">    return patientInfo;</span>
+  }
+
+  private PatientInfo getPatientInfoByFamilyNameAndGivenName(String familyName, String givenName) {
+<span class="fc" id="L97">    PatientInfo patientInfo =</span>
+<span class="fc" id="L98">        patientInfoClient.getPatientByFamilyNameAndGivenName(familyName, givenName);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    if (patientInfo == null) {</span>
+<span class="fc" id="L100">      logger.warn(&quot;Error, can't find patient : &quot; + familyName + &quot; - &quot; + givenName);</span>
+<span class="fc" id="L101">      throw new DataNotFoundException(&quot;KO, patient doesn't exist.&quot;);</span>
+    }
+<span class="fc" id="L103">    return patientInfo;</span>
+  }
+
+  private Assessment generateAssessment(
+      PatientInfo patientInfo, int keywordCount, int age, String sex) {
+    // create to Assessment
+<span class="fc" id="L109">    Assessment assessment = new Assessment();</span>
+<span class="fc" id="L110">    assessment.setAge(age);</span>
+<span class="fc" id="L111">    assessment.setFamilyName(patientInfo.getFamilyName());</span>
+<span class="fc" id="L112">    assessment.setGivenName(patientInfo.getGivenName());</span>
+    // switch
+
+<span class="fc" id="L115">    String male = &quot;M&quot;;</span>
+<span class="fc" id="L116">    String female = &quot;F&quot;;</span>
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">    if (age &gt;= 30) {</span>
+<span class="fc" id="L119">      assessAnySexOlderThan30(keywordCount, assessment);</span>
+    } else {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">      if (sex.equals(male)) {</span>
+<span class="fc" id="L122">        assessMaleYoungerThan30(keywordCount, assessment);</span>
+      } else {
+<span class="fc" id="L124">        assessFemaleYoungerThan30(keywordCount, sex, assessment, female);</span>
+      }
+    }
+<span class="fc" id="L127">    return assessment;</span>
+  }
+
+  private void assessAnySexOlderThan30(int keywordCount, Assessment assessment) {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">    if (keywordCount &lt; TriggerKeywordsOccurrenceCount.ANY_SEX_OLDER_THAN_30_BORDERLINE) {</span>
+      // NONE
+<span class="fc" id="L133">      assessment.setMessage(AssessMessages.NONE);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">    } else if (keywordCount &lt; TriggerKeywordsOccurrenceCount.ANY_SEX_OLDER_THAN_30_IN_DANGER) {</span>
+      // Borderline
+<span class="fc" id="L136">      assessment.setMessage(AssessMessages.BORDERLINE);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">    } else if (keywordCount &lt; TriggerKeywordsOccurrenceCount.ANY_SEX_OLDER_THAN_30_EARLY_ONSET) {</span>
+      // InDanger
+<span class="fc" id="L139">      assessment.setMessage(AssessMessages.IN_DANGER);</span>
+    } else {
+      // EarlyOnset
+<span class="fc" id="L142">      assessment.setMessage(AssessMessages.EARLY_ONSET);</span>
+    }
+<span class="fc" id="L144">  }</span>
+
+  private void assessFemaleYoungerThan30(
+      int keywordCount, String sex, Assessment assessment, String female) {
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">    if (sex.equals(female)) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">      if (keywordCount &lt; TriggerKeywordsOccurrenceCount.FEMALE_YOUNGER_THAN_30_BORDERLINE) {</span>
+<span class="fc" id="L150">        assessment.setMessage(AssessMessages.NONE);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">      } else if (keywordCount &lt; TriggerKeywordsOccurrenceCount.FEMALE_YOUNGER_THAN_30_IN_DANGER) {</span>
+<span class="fc" id="L152">        assessment.setMessage(AssessMessages.BORDERLINE);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">      } else if (keywordCount &lt; TriggerKeywordsOccurrenceCount.FEMALE_YOUNGER_THAN_30_EARLY_ONSET) {</span>
+<span class="fc" id="L154">        assessment.setMessage(AssessMessages.IN_DANGER);</span>
+      } else {
+<span class="fc" id="L156">        assessment.setMessage(AssessMessages.EARLY_ONSET);</span>
+      }
+    }
+<span class="fc" id="L159">  }</span>
+
+  private void assessMaleYoungerThan30(int keywordCount, Assessment assessment) {
+<span class="fc bfc" id="L162" title="All 2 branches covered.">    if (keywordCount &lt; TriggerKeywordsOccurrenceCount.MALE_YOUNGER_THAN_30_BORDERLINE) {</span>
+<span class="fc" id="L163">      assessment.setMessage(AssessMessages.NONE);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">    } else if (keywordCount &lt; TriggerKeywordsOccurrenceCount.MALE_YOUNGER_THAN_30_IN_DANGER) {</span>
+<span class="fc" id="L165">      assessment.setMessage(AssessMessages.BORDERLINE);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">    } else if (keywordCount &lt; TriggerKeywordsOccurrenceCount.MALE_YOUNGER_THAN_30_EARLY_ONSET) {</span>
+<span class="fc" id="L167">      assessment.setMessage(AssessMessages.IN_DANGER);</span>
+    } else {
+<span class="fc" id="L169">      assessment.setMessage(AssessMessages.EARLY_ONSET);</span>
+    }
+<span class="fc" id="L171">  }</span>
+
+  private int calculateAge(PatientInfo patientInfo) {
+<span class="fc" id="L174">    LocalDate birthDate = patientInfo.getBirthDate();</span>
+<span class="fc" id="L175">    return LocalDate.now().getYear() - birthDate.getYear();</span>
+  }
+
+  private int getKeywordCount(History history) {
+<span class="fc" id="L179">    AtomicInteger keywordCount = new AtomicInteger();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">    for (Note note : history.getNotes()) {</span>
+<span class="fc" id="L181">      TriggerKeywords.KEYWORDS.forEach(</span>
+          word -&gt; {
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (StringUtils.countOccurrencesOf(note.getText().toLowerCase(), word) &gt; 0) {</span>
+<span class="fc" id="L184">              keywordCount.getAndIncrement();</span>
+            }
+<span class="fc" id="L186">          });</span>
+<span class="fc" id="L187">    }</span>
+<span class="fc" id="L188">    logger.trace(&quot;keyword count = &quot; + keywordCount);</span>
+<span class="fc" id="L189">    return keywordCount.get();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
