@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   public getNotes: Note[] = [];
   public actualNote: Note | undefined;
   public assessment: Assessment | undefined;
-  public assessmentColor: string |undefined;
+  public assessmentColor: string | undefined;
 
   constructor(private patientService: PatientService, private historyService: HistoryService, private assessService: AssessService) {
   }
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
 
     this.patientService.getPatient(familyName, givenName).subscribe({
       next: (response: Patient) => {
-        this.getPatient=undefined;
+        this.getPatient = undefined;
         this.assessment = undefined;
         this.getHistory = undefined;
         this.getNotes = [];
@@ -141,7 +141,7 @@ export class AppComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
-        this.onOpenModal('addHistory',this.getPatient);
+        this.onOpenModal('addHistory', this.getPatient);
       }
     })
   }

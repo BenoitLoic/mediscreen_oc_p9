@@ -73,8 +73,8 @@
         </div>
       </div>
       <div class="d-flex justify-content-around">
-        <div class="btn-group btn-group-md"><!-- GET Assess -->
-          <a class="btn btn-outline-warning" (click)="getAssess(getPatient.id)"><i class="bi bi-play-circle-fill"> Get
+        <div class="btn-group btn-group-md"><!-- Assess -->
+          <a class="btn btn-outline-warning" (click)="getAssess(getPatient.id)"><i class="bi bi-play-circle-fill">
             Assess</i></a>
         </div>
         <div class="btn-group btn-group-md"><!-- AJOUTER create Note ici -->
@@ -323,8 +323,9 @@
             </div>
             <div class="form-group">
               <label for="noteNoteEditForm">Note</label>
-              <textarea type="text" ngModel="{{actualNote?.text}}" name="text" class="form-control" id="noteNoteEditForm"
-                     placeholder="{{actualNote?.text}}"
+              <textarea type="text" ngModel="{{actualNote?.text}}" name="text" class="form-control"
+                        id="noteNoteEditForm"
+                        placeholder="{{actualNote?.text}}"
                         required></textarea>
             </div>
 

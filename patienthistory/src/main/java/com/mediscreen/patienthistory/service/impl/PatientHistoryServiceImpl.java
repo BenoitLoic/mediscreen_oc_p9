@@ -39,7 +39,7 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
   public History getPatientHistoryByFamilyNameAndGivenName(String familyName, String givenName) {
     logger.trace("service, get patient history in db.");
     Optional<History> history =
-        patientHistoryRepository.findHistoryByFamilyNameAndGivenName(familyName, givenName);
+        patientHistoryRepository.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(familyName, givenName);
     if (history.isEmpty()) {
       logger.warn("Error, patient: " + familyName + " - " + givenName + " doesn't exist.");
       throw new DataNotFoundException("KO, patient doesn't exist.");

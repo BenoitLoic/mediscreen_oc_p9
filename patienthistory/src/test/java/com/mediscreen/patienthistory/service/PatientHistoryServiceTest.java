@@ -37,12 +37,12 @@ class PatientHistoryServiceTest {
     History history = new History();
     history.setGivenName(givenName);
     // WHEN
-    when(patientHistoryRepositoryMock.findHistoryByFamilyNameAndGivenName(anyString(), anyString()))
+    when(patientHistoryRepositoryMock.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(anyString(), anyString()))
         .thenReturn(Optional.of(history));
     // THEN
     History actual = patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName);
     verify(patientHistoryRepositoryMock, times(1))
-        .findHistoryByFamilyNameAndGivenName(familyName, givenName);
+        .findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(familyName, givenName);
     assertEquals(givenName, actual.getGivenName());
   }
 
@@ -51,7 +51,7 @@ class PatientHistoryServiceTest {
     // GIVEN
 
     // WHEN
-    when(patientHistoryRepositoryMock.findHistoryByFamilyNameAndGivenName(anyString(), anyString()))
+    when(patientHistoryRepositoryMock.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(anyString(), anyString()))
         .thenReturn(Optional.empty());
     // THEN
     assertThrows(

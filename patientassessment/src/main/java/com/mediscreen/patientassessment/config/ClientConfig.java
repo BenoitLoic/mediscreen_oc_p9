@@ -12,7 +12,7 @@ public class ClientConfig {
 
   @Bean
   public Logger.Level feignLoggerLevel() {
-    return Logger.Level.FULL;
+    return Logger.Level.NONE;
   }
 
   @Bean
