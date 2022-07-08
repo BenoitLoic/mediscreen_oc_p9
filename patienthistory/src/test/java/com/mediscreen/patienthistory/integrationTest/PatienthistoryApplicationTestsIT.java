@@ -48,20 +48,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class PatienthistoryApplicationTestsIT {
+  @Container
+  private static final MongoDBContainer mongoDBContainer =
+      new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
   Logger logger = LoggerFactory.getLogger(PatienthistoryApplicationTestsIT.class);
-
   @Autowired PatientHistoryRepository patientHistoryRepository;
-
   @Autowired MongoOperations mongoOperations;
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
 
-  @Container
-  private static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
   @DynamicPropertySource
   static void mongoDbProperties(DynamicPropertyRegistry registry) {
     registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
   }
+
   @BeforeEach
   void setUp() {
 

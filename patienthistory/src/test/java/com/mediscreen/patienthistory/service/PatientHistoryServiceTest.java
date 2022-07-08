@@ -37,10 +37,12 @@ class PatientHistoryServiceTest {
     History history = new History();
     history.setGivenName(givenName);
     // WHEN
-    when(patientHistoryRepositoryMock.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(anyString(), anyString()))
+    when(patientHistoryRepositoryMock.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(
+            anyString(), anyString()))
         .thenReturn(Optional.of(history));
     // THEN
-    History actual = patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName);
+    History actual =
+        patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName);
     verify(patientHistoryRepositoryMock, times(1))
         .findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(familyName, givenName);
     assertEquals(givenName, actual.getGivenName());
@@ -51,12 +53,14 @@ class PatientHistoryServiceTest {
     // GIVEN
 
     // WHEN
-    when(patientHistoryRepositoryMock.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(anyString(), anyString()))
+    when(patientHistoryRepositoryMock.findHistoryByFamilyNameIgnoreCaseAndGivenNameIgnoreCase(
+            anyString(), anyString()))
         .thenReturn(Optional.empty());
     // THEN
     assertThrows(
         DataNotFoundException.class,
-        () -> patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName));
+        () ->
+            patientHistoryService.getPatientHistoryByFamilyNameAndGivenName(familyName, givenName));
   }
 
   @Test
@@ -303,13 +307,14 @@ class PatientHistoryServiceTest {
   @Test
   void updatePatientHistoryNote_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
     // GIVEN
-UpdateNoteDto updateNoteDto = new UpdateNoteDto();
-updateNoteDto.setPatientId(1);
+    UpdateNoteDto updateNoteDto = new UpdateNoteDto();
+    updateNoteDto.setPatientId(1);
     // WHEN
     when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
         .thenReturn(Optional.empty());
     // THEN
     assertThrows(
-        DataNotFoundException.class, () -> patientHistoryService.updatePatientHistoryNote(updateNoteDto));
+        DataNotFoundException.class,
+        () -> patientHistoryService.updatePatientHistoryNote(updateNoteDto));
   }
 }

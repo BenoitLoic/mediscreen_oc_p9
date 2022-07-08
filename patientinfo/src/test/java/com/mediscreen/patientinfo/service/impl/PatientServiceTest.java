@@ -52,7 +52,8 @@ class PatientServiceTest {
         .thenReturn(Optional.empty());
     // THEN
     assertThrows(
-        DataNotFoundException.class, () -> patientService.getPatientByFamilyNameAndGivenName(familyName, givenName));
+        DataNotFoundException.class,
+        () -> patientService.getPatientByFamilyNameAndGivenName(familyName, givenName));
   }
 
   @Test
@@ -173,6 +174,7 @@ class PatientServiceTest {
     // THEN}
     assertThrows(DataAlreadyExistException.class, () -> patientService.createPatient(patient));
   }
+
   @Test
   void getPatientById() {
 
@@ -184,8 +186,7 @@ class PatientServiceTest {
     patient.setFamilyName(familyName);
     patient.setGivenName(givenName);
     // WHEN
-    when(patientRepositoryMock.findById(anyInt()))
-            .thenReturn(Optional.of(patient));
+    when(patientRepositoryMock.findById(anyInt())).thenReturn(Optional.of(patient));
     // THEN
     Patient result = patientService.getPatientById(id);
     assertEquals(result.getFamilyName(), familyName);
@@ -197,10 +198,8 @@ class PatientServiceTest {
     // GIVEN
     int id = 2;
     // WHEN
-    when(patientRepositoryMock.findById(anyInt()))
-            .thenReturn(Optional.empty());
+    when(patientRepositoryMock.findById(anyInt())).thenReturn(Optional.empty());
     // THEN
-    assertThrows(
-            DataNotFoundException.class, () -> patientService.getPatientById(id));
+    assertThrows(DataNotFoundException.class, () -> patientService.getPatientById(id));
   }
 }

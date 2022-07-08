@@ -11,14 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
-import java.time.Month;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -29,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,12 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class PatientInfoIT {
 
-  private final String familyName = "familyNameTest1";
-  @Value("${spring.jpa.hibernate.ddl-auto}")
-  private String value;
-
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
   @Container
   public static MySQLContainer mySQLContainer =
       new MySQLContainer<>("mysql:8.0.29")
@@ -52,6 +43,9 @@ public class PatientInfoIT {
           .withPassword("test")
           .withDatabaseName("MediscreenSql")
           .withInitScript("scripts/sqlCreate.sql");
+  private final String familyName = "familyNameTest1";
+  @Autowired private PatientRepository patientRepository;
+  @Autowired private MockMvc mockMvc;
 
   @DynamicPropertySource
   static void dataBaseProperties(DynamicPropertyRegistry registry) {
@@ -65,29 +59,6 @@ public class PatientInfoIT {
     mySQLContainer.stop();
   }
 
-  @Autowired private PatientRepository patientRepository;
-  @Autowired private MockMvc mockMvc;
-
-  @Test
-  void contextLoads() {
-    System.out.println("Context loads!");
-  }
-
-  @Test
-  void test() {
-    logger.error("début de la méthode");
-    System.out.println(value);
-    Patient patient = new Patient();
-    patient.setFamilyName("familyNameTest");
-    patient.setGivenName("givenNameTest");
-    patient.setPhone("0123456");
-    patient.setAddress("address test 123");
-    patient.setSex("F");
-    patient.setBirthDate(LocalDate.of(1987, Month.MARCH, 23));
-    patientRepository.save(patient);
-    patientRepository.findAll().forEach(System.out::println);
-  }
-
   @Test
   void getPatientByFamilyNameAndLastNameValid() throws Exception {
     // GIVEN
@@ -99,7 +70,9 @@ public class PatientInfoIT {
     mockMvc
         .perform(get("/patient/get").param("family", familyName).param("given", givenName))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().string(containsString("\"id\":1")))
+        .andExpect(content().string(containsString("\"familyName\":\"familyNameTest1\"")));
   }
 
   @Test
@@ -129,12 +102,12 @@ public class PatientInfoIT {
     // THEN
     String unknown = "woops";
     mockMvc
-            .perform(get("/patient/get").param("family", familyName).param("given", unknown))
-            .andExpect(status().isNotFound())
-            .andExpect(
-                    result ->
-                            Assertions.assertTrue(
-                                    result.getResolvedException() instanceof DataNotFoundException));
+        .perform(get("/patient/get").param("family", familyName).param("given", unknown))
+        .andExpect(status().isNotFound())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof DataNotFoundException));
   }
 
   @Test
@@ -145,9 +118,11 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(get("/patient/id/get").param("id", "2"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        .perform(get("/patient/id/get").param("id", "2"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().string(containsString("\"id\":2")))
+        .andExpect(content().string(containsString("\"familyName\":\"familyNameTest2\"")));
   }
 
   @Test
@@ -158,12 +133,12 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(get("/patient/id/get").param("id", String.valueOf(0)))
-            .andExpect(status().isBadRequest())
-            .andExpect(
-                    result ->
-                            Assertions.assertTrue(
-                                    result.getResolvedException() instanceof BadArgumentException));
+        .perform(get("/patient/id/get").param("id", String.valueOf(0)))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof BadArgumentException));
   }
 
   @Test
@@ -174,12 +149,12 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(get("/patient/id/get").param("id", String.valueOf(99)))
-            .andExpect(status().isNotFound())
-            .andExpect(
-                    result ->
-                            Assertions.assertTrue(
-                                    result.getResolvedException() instanceof DataNotFoundException));
+        .perform(get("/patient/id/get").param("id", String.valueOf(99)))
+        .andExpect(status().isNotFound())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof DataNotFoundException));
   }
 
   @Test
@@ -201,9 +176,12 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isAccepted())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isAccepted())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().string(containsString("\"id\":3")))
+        .andExpect(content().string(containsString("\"familyName\":\"updatedFamilyName\"")))
+        .andExpect(content().string(containsString("\"givenName\":\"updatedGivenName\"")));
   }
 
   @Test
@@ -223,12 +201,12 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(
-                    result ->
-                            Assertions.assertTrue(
-                                    result.getResolvedException() instanceof BadArgumentException));
+        .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof BadArgumentException));
   }
 
   @Test
@@ -252,12 +230,12 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound())
-            .andExpect(
-                    result ->
-                            Assertions.assertTrue(
-                                    result.getResolvedException() instanceof DataNotFoundException));
+        .perform(put("/patient/update").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof DataNotFoundException));
   }
 
   @Test
@@ -279,9 +257,15 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isCreated())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    Assertions.assertEquals(
+        5,
+        patientRepository
+            .findByFamilyNameAndGivenName("familynametest", "nametest")
+            .map(Patient::getId)
+            .orElse(0));
   }
 
   @Test
@@ -303,12 +287,12 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(
-                    result ->
-                            Assertions.assertTrue(
-                                    result.getResolvedException() instanceof BadArgumentException));
+        .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof BadArgumentException));
   }
 
   @Test
@@ -330,11 +314,11 @@ public class PatientInfoIT {
 
     // THEN
     mockMvc
-            .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isConflict())
-            .andExpect(
-                    result ->
-                            Assertions.assertTrue(
-                                    result.getResolvedException() instanceof DataAlreadyExistException));
+        .perform(post("/patient/add").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict())
+        .andExpect(
+            result ->
+                Assertions.assertTrue(
+                    result.getResolvedException() instanceof DataAlreadyExistException));
   }
 }

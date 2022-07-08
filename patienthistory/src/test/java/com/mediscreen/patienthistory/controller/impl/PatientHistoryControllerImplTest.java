@@ -34,8 +34,8 @@ class PatientHistoryControllerImplTest {
   private final String familyName = "familyNameTest";
   private final String invalidFamilyName = "";
   @MockBean PatientHistoryService patientHistoryServiceMock;
-  @Autowired private MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
+  @Autowired private MockMvc mockMvc;
 
   @Test
   void getPatientHistoryValid() throws Exception {
@@ -43,12 +43,15 @@ class PatientHistoryControllerImplTest {
     // GIVEN
 
     // WHEN
-    when(patientHistoryServiceMock.getPatientHistoryByFamilyNameAndGivenName(anyString(), anyString()))
+    when(patientHistoryServiceMock.getPatientHistoryByFamilyNameAndGivenName(
+            anyString(), anyString()))
         .thenReturn(new History());
     // THEN
     mockMvc
         .perform(
-            get("/patHistory/name/get").param("givenName", givenName).param("familyName", familyName))
+            get("/patHistory/name/get")
+                .param("givenName", givenName)
+                .param("familyName", familyName))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
@@ -84,7 +87,9 @@ class PatientHistoryControllerImplTest {
     // THEN
     mockMvc
         .perform(
-            get("/patHistory/name/get").param("givenName", givenName).param("familyName", familyName))
+            get("/patHistory/name/get")
+                .param("givenName", givenName)
+                .param("familyName", familyName))
         .andExpect(status().isNotFound())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof DataNotFoundException));

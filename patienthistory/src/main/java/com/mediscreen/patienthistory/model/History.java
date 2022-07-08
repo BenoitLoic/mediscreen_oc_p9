@@ -12,7 +12,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class History {
 
   @Id private String id;
-  @Indexed(unique = true) private Integer patientId;
+
+  @Indexed(unique = true)
+  private Integer patientId;
+
   private String familyName;
   private String givenName;
   private Collection<Note> notes = new ArrayList<>();
