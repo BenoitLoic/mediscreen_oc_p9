@@ -8,16 +8,16 @@ import feign.codec.ErrorDecoder;
 
 /** Configuration for Feign client. */
 @Configuration
-<span class="nc" id="L11">public class ClientConfig {</span>
+<span class="fc" id="L11">public class ClientConfig {</span>
 
   @Bean
   public Logger.Level feignLoggerLevel() {
-<span class="nc" id="L15">    return Logger.Level.NONE;</span>
+<span class="fc" id="L15">    return Logger.Level.NONE;</span>
   }
 
   @Bean
   public ErrorDecoder errorDecoder() {
-<span class="nc" id="L20">    return new RetrieveMessageErrorDecoder();</span>
+<span class="fc" id="L20">    return new RetrieveMessageErrorDecoder();</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
