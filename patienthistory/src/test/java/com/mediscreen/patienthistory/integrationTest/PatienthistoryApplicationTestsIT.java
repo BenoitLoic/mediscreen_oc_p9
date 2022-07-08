@@ -129,19 +129,17 @@ class PatienthistoryApplicationTestsIT {
     note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     savedPatient.setNotes(List.of(note));
     mongoOperations.insert(savedPatient);
+
     History patient =
         mongoOperations.findOne(Query.query(Criteria.where("patientId").is(10)), History.class);
     assert patient != null;
-    var date = patient.getNotes().stream().findFirst().orElseThrow().getDate();
-    Note updateNote = new Note();
-    updateNote.setText("updated text!");
-    updateNote.setDate(date);
+
     UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
     updateHistoryDto.setPatientId(savedPatient.getPatientId());
     updateHistoryDto.setFamilyName(savedPatient.getFamilyName());
-    updateHistoryDto.setGivenName(savedPatient.getGivenName());
-    updateHistoryDto.setNotes(List.of(updateNote));
-    var json = objectMapper.writeValueAsString(updateHistoryDto);
+    updateHistoryDto.setGivenName("updated Given Name");
+
+    String json = objectMapper.writeValueAsString(updateHistoryDto);
     // WHEN
 
     // THEN
@@ -156,7 +154,7 @@ class PatienthistoryApplicationTestsIT {
     assertEquals(updatedPatient.getNotes().size(), 1);
     //noinspection OptionalGetWithoutIsPresent
     assertEquals(
-        updatedPatient.getNotes().stream().findFirst().get().getText(), updateNote.getText());
+        updateHistoryDto.getGivenName(), updatedPatient.getGivenName());
   }
 
   @Test

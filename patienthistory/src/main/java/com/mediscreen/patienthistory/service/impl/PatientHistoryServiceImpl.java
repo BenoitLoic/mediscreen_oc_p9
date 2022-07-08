@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientHistoryServiceImpl implements PatientHistoryService {
   private final Logger logger = LoggerFactory.getLogger(PatientHistoryServiceImpl.class);
-  @Autowired PatientHistoryRepository patientHistoryRepository;
+  @Autowired private PatientHistoryRepository patientHistoryRepository;
 
   /**
    * Get all the notes saved for the given patient.
@@ -76,49 +76,19 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
   public History updatePatientHistory(UpdateHistoryDto updateHistoryDto) {
 
     // Get History from db
-    Optional<History> savedHistory =
-        patientHistoryRepository.findHistoryByPatientId(updateHistoryDto.getPatientId());
-    // throw DataNotFoundException if Optional.empty
-    if (savedHistory.isEmpty()) {
-      logger.warn("Error, can't find patient history for id: " + updateHistoryDto.getPatientId());
-      throw new DataNotFoundException("KO, patient history doesn't exist.");
-    }
-    History patientHistory = savedHistory.get();
-    int count = 0;
+    History patientHistory = this.getPatientHistoryById(updateHistoryDto.getPatientId());
     // Update givenName/familyName if !=
     if (!updateHistoryDto.getFamilyName().isBlank()
         && !updateHistoryDto.getFamilyName().equals(patientHistory.getFamilyName())) {
       logger.trace("updating familyName");
-      count++;
       patientHistory.setFamilyName(updateHistoryDto.getFamilyName());
     }
     if (!updateHistoryDto.getGivenName().isBlank()
         && !updateHistoryDto.getGivenName().equals(patientHistory.getGivenName())) {
       logger.trace("updating givenName");
-      count++;
       patientHistory.setGivenName(updateHistoryDto.getGivenName());
     }
-    // update note if dto.note.date == history.note.date
-    if (!updateHistoryDto.getNotes().isEmpty() && patientHistory.getNotes().isEmpty()) {
-      logger.trace("adding text note.");
-      count++;
-      patientHistory.setNotes(updateHistoryDto.getNotes());
-    } else if (!updateHistoryDto.getNotes().isEmpty()) {
-      for (Note upNote : updateHistoryDto.getNotes()) {
-        for (Note note : patientHistory.getNotes()) {
-          if (note.getDate().equals(upNote.getDate())) {
-            logger.trace("updating text note.");
-            count++;
-            note.setText(upNote.getText());
-          }
-        }
-      }
-    }
-    logger.info(
-        "Updating "
-            + count
-            + " fields for patient history with id="
-            + patientHistory.getPatientId());
+    logger.info("Updating patient history with id=" + patientHistory.getPatientId());
     return patientHistoryRepository.save(patientHistory);
   }
 
@@ -143,10 +113,12 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
     // map dto to History
     History history = new History();
     BeanUtils.copyProperties(addPatientHistoryDto, history);
-    Note note = new Note();
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-    note.setText(addPatientHistoryDto.getTextNote());
-    history.setNotes(List.of(note));
+    if (!addPatientHistoryDto.getTextNote().isBlank()) {
+      Note note = new Note();
+      note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+      note.setText(addPatientHistoryDto.getTextNote());
+      history.setNotes(List.of(note));
+    }
     // save
     logger.trace("Saving new history.");
     return patientHistoryRepository.save(history);
@@ -161,16 +133,12 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
   @Override
   public History createPatientHistoryNote(AddNoteDto addNoteDto) {
     // check if history exist
-    Optional<History> savedHistory =
-        patientHistoryRepository.findHistoryByPatientId(addNoteDto.getPatientId());
-    if (savedHistory.isEmpty()) {
-      logger.warn("Error, can't find patient history for id: " + addNoteDto.getPatientId());
-      throw new DataNotFoundException("KO, patient history doesn't exist.");
-    }
+    History historyToSave = this.getPatientHistoryById(addNoteDto.getPatientId());
+
     Note noteToAdd = new Note();
     noteToAdd.setText(addNoteDto.getTextNote());
-    noteToAdd.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-    History historyToSave = savedHistory.get();
+    noteToAdd.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
     Collection<Note> notes = new ArrayList<>(historyToSave.getNotes());
     notes.add(noteToAdd);
     historyToSave.setNotes(notes);
@@ -187,13 +155,8 @@ public class PatientHistoryServiceImpl implements PatientHistoryService {
   @Override
   public History updatePatientHistoryNote(UpdateNoteDto updateNoteDto) {
     // check if history exist
-    Optional<History> savedHistory =
-        patientHistoryRepository.findHistoryByPatientId(updateNoteDto.getPatientId());
-    if (savedHistory.isEmpty()) {
-      logger.warn("Error, can't find patient history for id: " + updateNoteDto.getPatientId());
-      throw new DataNotFoundException("KO, patient history doesn't exist.");
-    }
-    History history = savedHistory.get();
+
+    History history = this.getPatientHistoryById(updateNoteDto.getPatientId());
     for (Note note : history.getNotes()) {
       if (note.getDate().equals(updateNoteDto.getDate())) {
         logger.trace("Updating text.");

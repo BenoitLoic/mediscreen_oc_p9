@@ -10,15 +10,20 @@ import com.mediscreen.patienthistory.model.dto.UpdateHistoryDto;
 import com.mediscreen.patienthistory.model.dto.UpdateNoteDto;
 import com.mediscreen.patienthistory.repository.PatientHistoryRepository;
 import com.mediscreen.patienthistory.service.impl.PatientHistoryServiceImpl;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.Repeat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -28,7 +33,6 @@ class PatientHistoryServiceTest {
   private final String familyName = "fName";
   private final String givenName = "gName";
   @Mock private PatientHistoryRepository patientHistoryRepositoryMock;
-
   @InjectMocks private PatientHistoryServiceImpl patientHistoryService;
 
   @Test
@@ -92,76 +96,6 @@ class PatientHistoryServiceTest {
   }
 
   @Test
-  void updatePatientHistory_ShouldUpdateNote1() {
-    // GIVEN
-    Note note1 = new Note("azerty qsdfg wxcv");
-    Note note2 = new Note("azerty qdsfsdgsdf  zéez tt");
-    note1.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    note2.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minus(1, ChronoUnit.DAYS));
-    History history = new History();
-    history.setGivenName(givenName);
-    history.setFamilyName(familyName);
-    history.setPatientId(50);
-    history.setNotes(List.of(note1, note2));
-
-    UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
-    updateHistoryDto.setGivenName(history.getGivenName());
-    updateHistoryDto.setFamilyName(history.getFamilyName());
-    updateHistoryDto.setPatientId(history.getPatientId());
-    Note updateNote = new Note();
-    updateNote.setDate(note1.getDate());
-    updateNote.setText("updated Note!");
-    updateHistoryDto.setNotes(List.of(updateNote));
-    History expectedSave = new History();
-    expectedSave.setGivenName(givenName);
-    expectedSave.setFamilyName(familyName);
-    expectedSave.setPatientId(50);
-    expectedSave.setNotes(List.of(updateNote, note2));
-    // WHEN
-    when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(history));
-    when(patientHistoryRepositoryMock.save(any(History.class))).thenReturn(new History());
-    // THEN
-    patientHistoryService.updatePatientHistory(updateHistoryDto);
-    verify(patientHistoryRepositoryMock, times(1)).findHistoryByPatientId(50);
-
-    verify(patientHistoryRepositoryMock, times(1)).save(expectedSave);
-  }
-
-  @Test
-  void updatePatientHistory_ShouldAdd2Notes() {
-    // GIVEN
-    Note note1 = new Note("azerty qsdfg wxcv");
-    Note note2 = new Note("azerty qdsfsdgsdf  zéez tt");
-    note1.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    note2.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minus(1, ChronoUnit.DAYS));
-    History history = new History();
-    history.setGivenName(givenName);
-    history.setFamilyName(familyName);
-    history.setPatientId(50);
-
-    UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
-    updateHistoryDto.setGivenName(history.getGivenName());
-    updateHistoryDto.setFamilyName(history.getFamilyName());
-    updateHistoryDto.setPatientId(history.getPatientId());
-    updateHistoryDto.setNotes(List.of(note1, note2));
-    History expectedSave = new History();
-    expectedSave.setGivenName(givenName);
-    expectedSave.setFamilyName(familyName);
-    expectedSave.setPatientId(50);
-    expectedSave.setNotes(List.of(note1, note2));
-    // WHEN
-    when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.of(history));
-    when(patientHistoryRepositoryMock.save(any(History.class))).thenReturn(new History());
-    // THEN
-    patientHistoryService.updatePatientHistory(updateHistoryDto);
-    verify(patientHistoryRepositoryMock, times(1)).findHistoryByPatientId(50);
-
-    verify(patientHistoryRepositoryMock, times(1)).save(expectedSave);
-  }
-
-  @Test
   void updatePatientHistory_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
     // GIVEN
     UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
@@ -183,23 +117,29 @@ class PatientHistoryServiceTest {
     AddPatientHistoryDto addHistory =
         new AddPatientHistoryDto(5, "createFamilyNameTest", "createGivenNameTest");
     Note note = new Note();
-    note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-    note.setText("test text");
-    addHistory.setTextNote("test text");
-    History history = new History();
-    history.setPatientId(addHistory.getPatientId());
-    history.setGivenName(addHistory.getGivenName());
-    history.setFamilyName(addHistory.getFamilyName());
-    history.setNotes(List.of(note));
-    // WHEN
-    when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
-        .thenReturn(Optional.empty());
-    when(patientHistoryRepositoryMock.save(any(History.class))).thenReturn(new History());
-    // THEN
-    patientHistoryService.createPatientHistory(addHistory);
-    verify(patientHistoryRepositoryMock, times(1))
-        .findHistoryByPatientId(addHistory.getPatientId());
-    verify(patientHistoryRepositoryMock, times(1)).save(history);
+    LocalDateTime now = LocalDateTime.of(2020, 03, 01, 20, 00, 10);
+    try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class)) {
+      mock.when(LocalDateTime::now).thenReturn(now);
+
+      note.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+      note.setText("test text");
+      addHistory.setTextNote("test text");
+      History history = new History();
+      history.setPatientId(addHistory.getPatientId());
+      history.setGivenName(addHistory.getGivenName());
+      history.setFamilyName(addHistory.getFamilyName());
+      history.setNotes(List.of(note));
+      // WHEN
+      when(patientHistoryRepositoryMock.findHistoryByPatientId(anyInt()))
+          .thenReturn(Optional.empty());
+      when(patientHistoryRepositoryMock.save(any(History.class))).thenReturn(new History());
+
+      // THEN
+      patientHistoryService.createPatientHistory(addHistory);
+      verify(patientHistoryRepositoryMock, times(1))
+          .findHistoryByPatientId(addHistory.getPatientId());
+      verify(patientHistoryRepositoryMock, times(1)).save(history);
+    }
   }
 
   @Test
@@ -221,10 +161,14 @@ class PatientHistoryServiceTest {
   @Test
   void createPatientHistoryNote() {
     // GIVEN
-    Note note1 = new Note("azerty qsdfg wxcv");
+    LocalDateTime now = LocalDateTime.of(2020,03,01,20,00,10);
+    try(MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class)) {
+      mock.when(LocalDateTime::now).thenReturn(now);
+
+      Note note1 = new Note("azerty qsdfg wxcv");
     Note note2 = new Note("azerty qdsfsdgsdf  zéez tt");
-    note1.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-    note2.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    note1.setDate(LocalDateTime.now());
+    note2.setDate(LocalDateTime.now());
     History savedHistory = new History();
     savedHistory.setGivenName(givenName);
     savedHistory.setFamilyName(familyName);
@@ -236,7 +180,7 @@ class PatientHistoryServiceTest {
     addNote.setPatientId(50);
 
     Note newNote = new Note();
-    newNote.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+    newNote.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     newNote.setText("test");
     History expected = new History();
     expected.setGivenName(givenName);
@@ -250,7 +194,7 @@ class PatientHistoryServiceTest {
     // THEN
     patientHistoryService.createPatientHistoryNote(addNote);
     verify(patientHistoryRepositoryMock, times(1)).save(expected);
-  }
+  }}
 
   @Test
   void createPatientHistoryNote_WhenHistoryDoesntExist_ShouldThrowDataNotFoundException() {
